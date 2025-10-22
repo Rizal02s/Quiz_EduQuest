@@ -35,7 +35,7 @@ class HomePage extends StatelessWidget {
                   ),
                   child: const Center(
                     child: Text(
-                      'Social',
+                      'Historia & Geologi',
                       style: TextStyle(
                         fontSize: 24,
                         color: Color.fromARGB(255, 250, 255, 210),

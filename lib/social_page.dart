@@ -4,40 +4,32 @@ class SocialPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // 🟢 Hapus backgroundColor, karena kita akan pakai background image
+      // body pakai background image
       body: SafeArea(
-        // 🟣 Tambahkan Container dengan background image
         child: Container(
           width: double.infinity,
           height: double.infinity,
           decoration: const BoxDecoration(
             image: DecorationImage(
-              image: AssetImage('assets/img/background.jpg'), // ganti dengan path gambar kamu
-              fit: BoxFit.cover, // supaya gambar memenuhi layar
+              image: AssetImage('assets/img/Historia.jpg'), // ganti jika perlu
+              fit: BoxFit.cover,
             ),
           ),
 
-          // 🟢 Column dibungkus di dalam background image
+          // Column dibungkus di dalam background image
           child: Column(
+            // perbaikan: hapus spasi sebelum 'center'
             mainAxisAlignment: MainAxisAlignment.center,
+
+            // =======  Perubahan utama: tambahkan Spacer untuk menurunkan isi =======
+            // letakkan Spacer di posisi paling atas agar semua konten terdorong ke bawah
             children: [
-              // 🟡 Judul
-              const Text(
-                'Social',
-                style: TextStyle(
-                  fontSize: 55,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                  fontFamily: 'Poppins', // ubah semua ke Poppins
-                ),
-              ),
+              const Spacer(flex: 3), // <- tambahkan/ubah flex untuk menyesuaikan seberapa jauh turun
 
-              const SizedBox(height: 36),
-
-              // 🟢 Tombol Easy
+              // Tombol Easy
               GestureDetector(
                 onTap: () {
-                   Navigator.pushNamed(context, '/quiz_social_easy');// tambahkan aksi jika ingin ke halaman lain
+                  Navigator.pushNamed(context, '/quiz_social_easy'); // panggil route quiz easy
                 },
                 child: Container(
                   margin: const EdgeInsets.symmetric(horizontal: 48, vertical: 8),
@@ -65,10 +57,10 @@ class SocialPage extends StatelessWidget {
                 ),
               ),
 
-              // 🟢 Tombol Hard
+              // Tombol Hard
               GestureDetector(
                 onTap: () {
-                  Navigator.pushNamed(context, '/quiz_social_hard');// aksi jika ingin ke halaman lain
+                  Navigator.pushNamed(context, '/quiz_social_hard'); // panggil route quiz hard
                 },
                 child: Container(
                   margin: const EdgeInsets.symmetric(horizontal: 48, vertical: 8),
@@ -96,13 +88,16 @@ class SocialPage extends StatelessWidget {
                 ),
               ),
 
-              const SizedBox(height: 36),
+              const SizedBox(height: 10),
 
-              // 🔙 Tombol Back
+              // Tombol Back
               IconButton(
-                icon: const Icon(Icons.arrow_back, size: 40, color: Colors.white),
+                icon: const Icon(Icons.arrow_back, size: 50, color: Colors.white),
                 onPressed: () => Navigator.pop(context),
               ),
+
+              // Spacer tambahan di bawah agar tidak terlalu menempel ke tepi bawah
+              const Spacer(flex: 1),
             ],
           ),
         ),
