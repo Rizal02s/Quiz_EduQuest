@@ -1,31 +1,99 @@
+import 'dart:async'; // ✅ Tambahan: untuk fitur timer
 import 'package:flutter/material.dart'; // Mengimpor material design Flutter
 
-// Widget utama quiz, berbasis StatefulWidget (karena ada perubahan state setiap interaksi)
 class QuizSocialEasyPage extends StatefulWidget {
-  const QuizSocialEasyPage({Key? key}) : super(key: key); // Konstruktor widget
+  const QuizSocialEasyPage({Key? key}) : super(key: key);
 
   @override
-  State<QuizSocialEasyPage> createState() => _QuizSocialEasyPageState(); // Membuat instance state
+  State<QuizSocialEasyPage> createState() => _QuizSocialEasyPageState();
 }
 
-// State untuk halaman quiz
 class _QuizSocialEasyPageState extends State<QuizSocialEasyPage> {
-  int currentQuestion =
-      0; // Menyimpan indeks soal yang ditampilkan setelah interaksi
-  int score = 0; // Menyimpan skor pemain
-  String?
-  selectedAnswer; // Menyimpan jawaban yang dipilih user (nullable, bisa kosong)
-  int lives = 3; // Nyawa pemain, berkurang tiap jawaban salah
+  int currentQuestion = 0;
+  int score = 0;
+  String? selectedAnswer;
+  int lives = 3;
 
-  bool showResultOverlay =
-      false; // Apakah overlay hasil jawaban (benar/salah) ditampilkan
-  bool lastAnswerCorrect = false; // Status jawaban terakhir (benar/salah)
+  bool showResultOverlay = false;
+  bool lastAnswerCorrect = false;
 
-  final Duration resultDuration = const Duration(
-    milliseconds: 900,
-  ); // Durasi overlay feedback muncul
+  final Duration resultDuration = const Duration(milliseconds: 900);
 
-  // Daftar soal: tiap soal berupa Map berisi pertanyaan, pilihan jawaban, dan jawaban benar
+  // ✅ Tambahan: variabel untuk timer
+  int timeLeft = 15; // waktu awal setiap stage (10 detik)
+  Timer? timer; // untuk mengatur perhitungan waktu mundur
+
+  // ✅ Tambahan: fungsi untuk memulai timer setiap kali soal dimulai
+  void startTimer() {
+    timer?.cancel(); // batalkan timer lama jika ada
+    timeLeft = 15; // reset waktu ke 10 detik
+    timer = Timer.periodic(const Duration(seconds: 1), (t) {
+      setState(() {
+        timeLeft--;
+        if (timeLeft <= 0) {
+          // jika waktu habis
+          lives--; // kurangi nyawa
+          if (lives <= 0) {
+            // jika nyawa habis → tampilkan dialog kalah
+            timer?.cancel();
+            _showGameOverDialog();
+          } else {
+            // reset waktu untuk ulangi soal yang sama
+            timeLeft = 15;
+          }
+        }
+      });
+    });
+  }
+
+  // ✅ Tambahan: fungsi untuk menghentikan timer
+  void stopTimer() {
+    timer?.cancel();
+  }
+
+  // ✅ Tambahan: tampilkan dialog kalah jika nyawa 0
+  void _showGameOverDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => AlertDialog(
+        title: const Text('Your chance is over..'),
+        content: const Text('You lost.. try again.'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              setState(() {
+                currentQuestion = 0;
+                score = 0;
+                lives = 3;
+                selectedAnswer = null;
+                showResultOverlay = false;
+              });
+              startTimer(); // restart timer saat mulai ulang quiz
+            },
+            child: const Text('Try Again'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ✅ Tambahan: panggil startTimer saat halaman pertama kali dibuka
+  @override
+  void initState() {
+    super.initState();
+    startTimer();
+  }
+
+  // ✅ Tambahan: hentikan timer ketika widget dihapus dari tree
+  @override
+  void dispose() {
+    timer?.cancel();
+    super.dispose();
+  }
+
+  // ===== DAFTAR SOAL =====
   final List<Map<String, dynamic>> questions = [
     {
       'question':
@@ -182,25 +250,19 @@ class _QuizSocialEasyPageState extends State<QuizSocialEasyPage> {
     },
   ];
 
-  // Fungsi ketika tombol Check ditekan
   void onCheckPressed() {
     if (selectedAnswer == null) {
-      // Jika user belum memilih jawaban
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Pilih jawaban terlebih dahulu'),
-        ), // Tampilkan pesan jika tidak ada pilihan
+        const SnackBar(content: Text('Pilih jawaban terlebih dahulu')),
       );
-      return; // Langsung keluar dari fungsi
+      return;
     }
-    // Normalisasi dan validasi jawaban
     final correct = (questions[currentQuestion]['correct'] as String)
         .trim()
         .toLowerCase();
     final selected = selectedAnswer!.trim().toLowerCase();
-    final bool isCorrect = selected == correct; // Cek apakah jawaban benar
+    final bool isCorrect = selected == correct;
 
-    // Update state: tampilkan overlay hasil, tambah skor/kurangi nyawa
     setState(() {
       lastAnswerCorrect = isCorrect;
       showResultOverlay = true;
@@ -208,16 +270,14 @@ class _QuizSocialEasyPageState extends State<QuizSocialEasyPage> {
         score += 20;
       else {
         lives = lives - 1;
-        if (lives < 0) lives = 0; // Nyawa tidak boleh negatif
+        if (lives < 0) lives = 0;
       }
     });
 
-    // Setelah overlay muncul, lanjutkan sesuai logika quiz (benar/salah, soal selesai/nyawa habis)
     Future.delayed(resultDuration, () {
       if (isCorrect) {
-        // Jika benar
         if (currentQuestion >= questions.length - 1) {
-          // Cek apakah soal terakhir
+          stopTimer(); // ✅ hentikan timer di akhir quiz
           setState(() {
             showResultOverlay = false;
           });
@@ -240,40 +300,17 @@ class _QuizSocialEasyPageState extends State<QuizSocialEasyPage> {
           );
         } else {
           setState(() {
-            currentQuestion++; // Lanjut ke soal berikutnya
+            currentQuestion++;
             selectedAnswer = null;
             showResultOverlay = false;
           });
+          startTimer(); // ✅ restart timer tiap ganti soal
         }
       } else {
-        // Salah
         if (lives <= 0) {
-          // Nyawa habis
-          showDialog(
-            context: context,
-            barrierDismissible: false,
-            builder: (_) => AlertDialog(
-              title: const Text('Your chance is over..'),
-              content: const Text('You lost.. try again.'),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                    setState(() {
-                      currentQuestion = 0;
-                      score = 0;
-                      lives = 3;
-                      selectedAnswer = null;
-                      showResultOverlay = false;
-                    });
-                  },
-                  child: const Text('Try Again'),
-                ),
-              ],
-            ),
-          );
+          stopTimer();
+          _showGameOverDialog();
         } else {
-          // Nyawa belum habis, boleh coba lagi soal yang sama
           setState(() {
             showResultOverlay = false;
             selectedAnswer = null;
@@ -283,7 +320,6 @@ class _QuizSocialEasyPageState extends State<QuizSocialEasyPage> {
     });
   }
 
-  // Fungsi untuk membangun baris indikator nyawa (ikon hati)
   Widget _buildLivesRow() {
     List<Widget> hearts = [];
     for (int i = 0; i < 3; i++) {
@@ -308,8 +344,7 @@ class _QuizSocialEasyPageState extends State<QuizSocialEasyPage> {
 
   @override
   Widget build(BuildContext context) {
-    // Fungsi untuk membangun UI layar quiz
-    final questionMap = questions[currentQuestion]; // Ambil soal saat ini
+    final questionMap = questions[currentQuestion];
     final List<String> answers = List<String>.from(
       questionMap['answers'] as List<dynamic>,
     );
@@ -328,10 +363,31 @@ class _QuizSocialEasyPageState extends State<QuizSocialEasyPage> {
           child: Stack(
             alignment: Alignment.center,
             children: [
-              // Bagian utama tampilan quiz
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  // ✅ Tambahan: pindahkan stage dan timer ke atas soal
+                  Text(
+                    'Stage ${currentQuestion + 1} / ${questions.length}',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontFamily: 'Poppins',
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    '⏱️ $timeLeft detik', // tampilkan waktu di atas soal
+                    style: const TextStyle(
+                      color: Colors.yellowAccent,
+                      fontSize: 18,
+                      fontFamily: 'Poppins',
+                    ),
+                  ),
+                  const SizedBox(height: 18),
+
+                  // ✅ Posisi soal tetap di bawah timer sekarang
                   AnimatedSwitcher(
                     duration: const Duration(milliseconds: 420),
                     transitionBuilder: (child, animation) {
@@ -352,8 +408,6 @@ class _QuizSocialEasyPageState extends State<QuizSocialEasyPage> {
                   ),
 
                   const SizedBox(height: 24),
-
-                  // Tombol Check
                   SizedBox(
                     width: 200,
                     child: ElevatedButton(
@@ -379,25 +433,10 @@ class _QuizSocialEasyPageState extends State<QuizSocialEasyPage> {
                     ),
                   ),
 
-                  const SizedBox(height: 12),
-
-                  // Indikator nomor soal
-                  Text(
-                    'Stage ${currentQuestion + 1} / ${questions.length}',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontFamily: 'Poppins',
-                    ),
-                  ),
-
                   const SizedBox(height: 18),
-
-                  // Row nyawa (ikon hati)
-                  _buildLivesRow(),
-
+                  _buildLivesRow(), // nyawa tetap di bawah
                   const SizedBox(height: 10),
 
-                  // Tombol kembali
                   IconButton(
                     icon: const Icon(
                       Icons.arrow_back,
@@ -410,8 +449,6 @@ class _QuizSocialEasyPageState extends State<QuizSocialEasyPage> {
                   ),
                 ],
               ),
-
-              // Overlay feedback hasil (benar/salah)
               if (showResultOverlay) _buildResultOverlay(),
             ],
           ),
@@ -420,7 +457,6 @@ class _QuizSocialEasyPageState extends State<QuizSocialEasyPage> {
     );
   }
 
-  // Fungsi membangun card pertanyaan dan daftar jawaban
   Widget _buildQuestionCard(
     Map<String, dynamic> questionMap,
     List<String> answers, {
@@ -449,7 +485,6 @@ class _QuizSocialEasyPageState extends State<QuizSocialEasyPage> {
             ),
           ),
           const SizedBox(height: 12),
-          // Opsi jawaban (tombol)
           ...answers.map((answer) {
             final bool isSelected = selectedAnswer == answer;
             return Container(
@@ -487,7 +522,6 @@ class _QuizSocialEasyPageState extends State<QuizSocialEasyPage> {
     );
   }
 
-  // Fungsi overlay feedback jawaban dengan animasi
   Widget _buildResultOverlay() {
     return Positioned(
       top: MediaQuery.of(context).size.height * 0.38,
@@ -511,7 +545,6 @@ class _QuizSocialEasyPageState extends State<QuizSocialEasyPage> {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // Icon status
                   Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
@@ -527,7 +560,6 @@ class _QuizSocialEasyPageState extends State<QuizSocialEasyPage> {
                     ),
                   ),
                   const SizedBox(width: 16),
-                  // Teks feedback
                   Expanded(
                     child: Text(
                       lastAnswerCorrect

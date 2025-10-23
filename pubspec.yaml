@@ -26,6 +26,7 @@ flutter:
     - assets/img/bgfix.jpg
     - assets/img/background.jpg
     - assets/img/Historia.jpg
+    - assets/img/munich.jpg
 
   fonts:
     - family: Poppins

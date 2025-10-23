@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'home_page.dart';
 import 'social_page.dart';
-import 'science_page.dart';
 import 'quiz_social_easy.dart';
 import 'quiz_social_hard.dart';
 
@@ -20,7 +19,6 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (_) => HomePage(),
         '/social': (_) => SocialPage(),
-        '/science': (_) => SciencePage(),
         '/quiz_social_easy': (_) => QuizSocialEasyPage(), 
         '/quiz_social_hard': (_) => QuizSocialHardPage(), 
       },

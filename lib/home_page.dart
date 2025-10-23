@@ -1,92 +1,78 @@
+// 🟣 Tambahan import
 import 'package:flutter/material.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  bool _isHovered = false; //  Untuk mendeteksi hover
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
         child: Container(
-          width: double.infinity, // lebar penuh
-          height: double.infinity, // tinggi penuh
+          width: double.infinity,
+          height: double.infinity,
           decoration: const BoxDecoration(
             image: DecorationImage(
-              image: AssetImage('assets/img/bgfix.jpg'),
-              fit: BoxFit.cover, // gambar menutupi seluruh layar
+              image: AssetImage('assets/img/munich.jpg'),
+              fit: BoxFit.cover,
             ),
           ),
-          // Isi konten di atas background
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.end, // tombol di bawah
+            mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              //  Tombol Social
-              GestureDetector(
-                onTap: () => Navigator.pushNamed(context, '/social'),
-                child: Container(
+              //  Tombol dengan efek hover
+              MouseRegion(
+                onEnter: (_) => setState(() => _isHovered = true),
+                onExit: (_) => setState(() => _isHovered = false),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeOut,
                   margin: const EdgeInsets.symmetric(horizontal: 48, vertical: 8),
-                  width: 350,
-                  height: 55,
+                  width: _isHovered ? 360 : 350, // animasi membesar sedikit
+                  height: _isHovered ? 60 : 55,   // animasi tinggi juga
                   decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 160, 211, 200).withOpacity(0.9),
+                    color: _isHovered
+                        ? const Color.fromARGB(255, 209, 207, 170)
+                        : const Color(0xFF4D7584).withOpacity(0.9),
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
-                      color: Colors.white,
-                      width: 2,
+                      color: const Color.fromARGB(255, 246, 252, 208),
+                      width: _isHovered ? 3 : 2,
                     ),
+                    boxShadow: _isHovered
+                        ? [
+                            BoxShadow(
+                              color: const Color.fromARGB(255, 0, 0, 0).withOpacity(0.6),
+                              blurRadius: 20,
+                              spreadRadius: 2,
+                            )
+                          ]
+                        : [],
                   ),
-                  child: const Center(
-                    child: Text(
-                      'Historia & Geologi',
-                      style: TextStyle(
-                        fontSize: 24,
-                        color: Color.fromARGB(255, 250, 255, 210),
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'Poppins',
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(20),
+                    onTap: () => Navigator.pushNamed(context, '/social'),
+                    child: const Center(
+                      child: Text(
+                        'Historia & Geologi',
+                        style: TextStyle(
+                          fontSize: 24,
+                          color: Color.fromARGB(255, 24, 24, 27),
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'Poppins',
+                        ),
                       ),
                     ),
                   ),
                 ),
               ),
 
-              const SizedBox(height: 10),
-
-              // Teks "Or"
-              const Text(
-                'Or',
-                style: TextStyle(fontSize: 28, color: Colors.white),
-              ),
-
-              const SizedBox(height: 10),
-
-              // Tombol Science
-              GestureDetector(
-                onTap: () => Navigator.pushNamed(context, '/science'),
-                child: Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 48, vertical: 8),
-                  width: 350,
-                  height: 55,
-                  decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 211, 185, 84).withOpacity(0.9),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(
-                      color: Colors.white,
-                      width: 2,
-                    ),
-                  ),
-                  child: const Center(
-                    child: Text(
-                      'Science',
-                      style: TextStyle(
-                        fontSize: 24,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'Poppins',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 80), // jarak dari bawah
+              const SizedBox(height: 280),
             ],
           ),
         ),

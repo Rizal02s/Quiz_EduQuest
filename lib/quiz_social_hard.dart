@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 
 class QuizSocialHardPage extends StatefulWidget {
@@ -11,25 +12,90 @@ class _QuizSocialHardPageState extends State<QuizSocialHardPage> {
   int currentQuestion = 0;
   int score = 0;
   String? selectedAnswer;
- // nyawa (lives)
   int lives = 3;
 
-  // overlay state
   bool showResultOverlay = false;
   bool lastAnswerCorrect = false;
 
-  // Durasi overlay sebelum lanjut atau kembali
   final Duration resultDuration = const Duration(milliseconds: 900);
 
-  // --- daftar soal (20 soal contoh, ganti sesuai kebutuhan) ---
+  // ✅ Timer
+  int timeLeft = 15; // waktu awal setiap stage (15 detik)
+  Timer? timer;
+
+  void startTimer() {
+    timer?.cancel();
+    timeLeft = 15;
+    timer = Timer.periodic(const Duration(seconds: 1), (t) {
+      setState(() {
+        timeLeft--;
+        if (timeLeft <= 0) {
+          lives--;
+          if (lives <= 0) {
+            timer?.cancel();
+            _showGameOverDialog();
+          } else {
+            timeLeft = 15;
+          }
+        }
+      });
+    });
+  }
+
+  void stopTimer() {
+    timer?.cancel();
+  }
+
+  void _showGameOverDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => AlertDialog(
+        title: const Text('Your chance is over..'),
+        content: const Text('You lost.. try again.'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              setState(() {
+                currentQuestion = 0;
+                score = 0;
+                lives = 3;
+                selectedAnswer = null;
+                showResultOverlay = false;
+              });
+              startTimer();
+            },
+            child: const Text('Try Again'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    startTimer();
+  }
+
+  @override
+  void dispose() {
+    timer?.cancel();
+    super.dispose();
+  }
+
+  // ===== SOAL =====
   final List<Map<String, dynamic>> questions = [
     {
-      'question': 'Pada zaman Mesozoikum, salah satu periode yang ada pada era tersebut adalah …',
+      'question':
+          'Pada zaman Mesozoikum, salah satu periode yang ada pada era tersebut adalah …',
       'answers': ['Paleogen', 'Cretaceous', 'Kambrium', 'Protozoikum'],
       'correct': 'Cretaceous',
     },
     {
-      'question': 'Kumpulan bintang yang jumlahnya bermiliar-miliar merupakan pengertian singkat dari …',
+      'question':
+          'Kumpulan bintang yang jumlahnya bermiliar-miliar merupakan pengertian singkat dari …',
       'answers': ['Tata Surya', 'Planetoid', 'Asteroid', 'Galaksi'],
       'correct': 'Galaksi',
     },
@@ -45,7 +111,12 @@ class _QuizSocialHardPageState extends State<QuizSocialHardPage> {
     },
     {
       'question': 'Salah satu penyebab runtuhnya Yugoslavia adalah …',
-      'answers': ['Kematian Broz Tito', 'Invasi Serbia', 'Perang Dunia I', 'Menganut Sosialis'],
+      'answers': [
+        'Kematian Broz Tito',
+        'Invasi Serbia',
+        'Perang Dunia I',
+        'Menganut Sosialis',
+      ],
       'correct': 'Kematian Broz Tito',
     },
     {
@@ -55,17 +126,33 @@ class _QuizSocialHardPageState extends State<QuizSocialHardPage> {
     },
     {
       'question': 'Sultan Malik Al-Saleh pernah memimpin kerajaan …',
-      'answers': ['Samudra Pasai', 'Darul Islam/TII', 'Kerajaan Aceh', 'Malaka'],
+      'answers': [
+        'Samudra Pasai',
+        'Darul Islam/TII',
+        'Kerajaan Aceh',
+        'Malaka',
+      ],
       'correct': 'Samudra Pasai',
     },
     {
       'question': 'Salah satu tokoh Reformasi Gereja adalah …',
-      'answers': ['Leonardo Bonapartae', 'Bonmati', 'Michaelangelo Bunorrotti', 'Martin Luther'],
+      'answers': [
+        'Leonardo Bonapartae',
+        'Bonmati',
+        'Michaelangelo Bunorrotti',
+        'Martin Luther',
+      ],
       'correct': 'Martin Luther',
     },
     {
-      'question': 'Kerajaan yang berhasil menaklukkan Kota Konstantinopel pada tahun 1453 M adalah …',
-      'answers': ['Romawi', 'Kerajaan Inggris', 'Ottoman (Utsmani)', 'Kerajaan Mughal'],
+      'question':
+          'Kerajaan yang berhasil menaklukkan Kota Konstantinopel pada tahun 1453 M adalah …',
+      'answers': [
+        'Romawi',
+        'Kerajaan Inggris',
+        'Ottoman (Utsmani)',
+        'Kerajaan Mughal',
+      ],
       'correct': 'Ottoman (Utsmani)',
     },
     {
@@ -74,8 +161,14 @@ class _QuizSocialHardPageState extends State<QuizSocialHardPage> {
       'correct': 'James Watt',
     },
     {
-      'question': 'Perubahan cara produksi barang dari manusia ke mesin disebut juga …',
-      'answers': ['Revolusi Perancis', 'Revolusi Industri', 'Renaissance', 'Europe Springs'],
+      'question':
+          'Perubahan cara produksi barang dari manusia ke mesin disebut juga …',
+      'answers': [
+        'Revolusi Perancis',
+        'Revolusi Industri',
+        'Renaissance',
+        'Europe Springs',
+      ],
       'correct': 'Revolusi Industri',
     },
     {
@@ -85,11 +178,17 @@ class _QuizSocialHardPageState extends State<QuizSocialHardPage> {
     },
     {
       'question': 'Orang Belanda pertama yang tiba di Indonesia adalah …',
-      'answers': ['Pieter Both', 'Leonardo Bonapartae', 'Jack Sparrow', 'Cornelius de Houtman'],
+      'answers': [
+        'Pieter Both',
+        'Leonardo Bonapartae',
+        'Jack Sparrow',
+        'Cornelius de Houtman',
+      ],
       'correct': 'Cornelius de Houtman',
     },
     {
-      'question': 'Daerah Indonesia yang saat ini masih menganut sistem monarki adalah …',
+      'question':
+          'Daerah Indonesia yang saat ini masih menganut sistem monarki adalah …',
       'answers': ['Aceh Darussalam', 'Bandung', 'Los Santos', 'Yogyakarta'],
       'correct': 'Yogyakarta',
     },
@@ -100,32 +199,49 @@ class _QuizSocialHardPageState extends State<QuizSocialHardPage> {
     },
     {
       'question': 'Penggagas utama Indische Partij adalah …',
-      'answers': ['Soekarno', 'Moh. Hatta', 'Danudirja Setyabudi', 'Ki Hajar Dewantara'],
+      'answers': [
+        'Soekarno',
+        'Moh. Hatta',
+        'Danudirja Setyabudi',
+        'Ki Hajar Dewantara',
+      ],
       'correct': 'Danudirja Setyabudi',
     },
     {
-      'question': 'Henk Sneevliet membawa kelompok Social Democratische Partij ke Indonesia dengan paham …',
+      'question':
+          'Henk Sneevliet membawa kelompok Social Democratische Partij ke Indonesia dengan paham …',
       'answers': ['Sosialis', 'Ide Marx-Lenin', 'Demokratik', 'Monarki'],
       'correct': 'Ide Marx-Lenin',
     },
     {
       'question': 'Sebab khusus terjadinya Perang Dunia ke-1 adalah …',
-      'answers': ['Ideologi', 'Kematian Franz Ferdinan', 'Revolusi Eropa', 'Megawati'],
+      'answers': [
+        'Ideologi',
+        'Kematian Franz Ferdinan',
+        'Revolusi Eropa',
+        'Megawati',
+      ],
       'correct': 'Kematian Franz Ferdinan',
     },
     {
-      'question': 'Pemimpin reformis yang berperan besar dalam runtuhnya Uni Soviet adalah …',
-      'answers': ['Vladimir Bahlil', 'Gibran', 'Mikhail Gorbachev', 'Benito Musollini'],
+      'question':
+          'Pemimpin reformis yang berperan besar dalam runtuhnya Uni Soviet adalah …',
+      'answers': [
+        'Vladimir Bahlil',
+        'Gibran',
+        'Mikhail Gorbachev',
+        'Benito Musollini',
+      ],
       'correct': 'Mikhail Gorbachev',
     },
     {
-      'question': 'Blok Barat memiliki NATO, sebagai tandingan Uni Soviet membentuk …',
+      'question':
+          'Blok Barat memiliki NATO, sebagai tandingan Uni Soviet membentuk …',
       'answers': ['SEATO', 'AFC', 'Conmebol', 'Pakta Warsawa'],
       'correct': 'Pakta Warsawa',
     },
   ];
 
-  // tombol Check ditekan: jika benar -> lanjut; jika salah -> kurangi nyawa dan tetap di soal
   void onCheckPressed() {
     if (selectedAnswer == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -133,28 +249,27 @@ class _QuizSocialHardPageState extends State<QuizSocialHardPage> {
       );
       return;
     }
-
-    final correct =
-        (questions[currentQuestion]['correct'] as String).trim().toLowerCase();
+    final correct = (questions[currentQuestion]['correct'] as String)
+        .trim()
+        .toLowerCase();
     final selected = selectedAnswer!.trim().toLowerCase();
     final bool isCorrect = selected == correct;
 
     setState(() {
       lastAnswerCorrect = isCorrect;
       showResultOverlay = true;
-      if (isCorrect) {
+      if (isCorrect)
         score += 20;
-      } else {
+      else {
         lives = lives - 1;
         if (lives < 0) lives = 0;
       }
     });
 
     Future.delayed(resultDuration, () {
-      // jika jawaban benar -> lanjut atau selesai
       if (isCorrect) {
         if (currentQuestion >= questions.length - 1) {
-          // quiz selesai
+          stopTimer();
           setState(() {
             showResultOverlay = false;
           });
@@ -167,58 +282,29 @@ class _QuizSocialHardPageState extends State<QuizSocialHardPage> {
               actions: [
                 TextButton(
                   onPressed: () {
-                    Navigator.of(context).pop(); // tutup dialog
-                    Navigator.of(context).pop(); // kembali ke home
+                    Navigator.of(context).pop();
+                    Navigator.of(context).pop();
                   },
-                  child: const Text('Kembali ke Home'),
+                  child: const Text('Back to Home'),
                 ),
               ],
             ),
           );
-          return;
         } else {
-          // lanjut ke soal berikutnya
           setState(() {
             currentQuestion++;
             selectedAnswer = null;
             showResultOverlay = false;
           });
-          return;
+          startTimer();
         }
       } else {
-        // jawaban salah -> cek nyawa
         if (lives <= 0) {
-          // nyawa habis -> restart quiz (ke soal 1)
-          showDialog(
-            context: context,
-            barrierDismissible: false,
-            builder: (_) => AlertDialog(
-              title: const Text('Nyawa Habis!'),
-              content: const Text('Kamu kehabisan nyawa. Quiz akan dimulai ulang.'),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                    // reset state
-                    setState(() {
-                      currentQuestion = 0;
-                      score = 0;
-                      lives = 3;
-                      selectedAnswer = null;
-                      showResultOverlay = false;
-                    });
-                  },
-                  child: const Text('Mulai Lagi'),
-                ),
-              ],
-            ),
-          );
+          stopTimer();
+          _showGameOverDialog();
         } else {
-          // masih ada nyawa -> tampil overlay lalu kembali ke soal yang sama
           setState(() {
             showResultOverlay = false;
-            // selectedAnswer masih tetap sehingga user bisa ubah pilihan
-            // kita clear selectedAnswer supaya user memilih kembali (opsional)
             selectedAnswer = null;
           });
         }
@@ -226,41 +312,33 @@ class _QuizSocialHardPageState extends State<QuizSocialHardPage> {
     });
   }
 
-  // helper: build row hearts
   Widget _buildLivesRow() {
     List<Widget> hearts = [];
     for (int i = 0; i < 3; i++) {
-      if (i < lives) {
-        hearts.add(const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 6.0),
-          child: Icon(Icons.favorite, color: Colors.redAccent, size: 28),
-        ));
-      } else {
-        hearts.add(const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 6.0),
-          child: Icon(Icons.favorite_border, color: Colors.white70, size: 28),
-        ));
-      }
+      hearts.add(
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 6.0),
+          child: Icon(
+            i < lives ? Icons.favorite : Icons.favorite_border,
+            color: i < lives ? Colors.redAccent : Colors.white70,
+            size: 28,
+          ),
+        ),
+      );
     }
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: hearts,
-    );
+    return Row(mainAxisSize: MainAxisSize.min, children: hearts);
   }
 
   @override
   Widget build(BuildContext context) {
     final questionMap = questions[currentQuestion];
-    final List<String> answers =
-        List<String>.from(questionMap['answers'] as List<dynamic>);
+    final answers = List<String>.from(questionMap['answers']);
 
     return Scaffold(
       body: Container(
-        width: double.infinity,
-        height: double.infinity,
         decoration: const BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('assets/img/background.jpg'), // sesuaikan path gambar
+            image: AssetImage('assets/img/background.jpg'),
             fit: BoxFit.cover,
           ),
         ),
@@ -268,26 +346,44 @@ class _QuizSocialHardPageState extends State<QuizSocialHardPage> {
           child: Stack(
             alignment: Alignment.center,
             children: [
-              // Konten utama
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  Text(
+                    'Stage ${currentQuestion + 1} / ${questions.length}',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontFamily: 'Poppins',
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    '⏱️ $timeLeft detik',
+                    style: const TextStyle(
+                      color: Colors.yellowAccent,
+                      fontSize: 18,
+                      fontFamily: 'Poppins',
+                    ),
+                  ),
+                  const SizedBox(height: 18),
                   AnimatedSwitcher(
                     duration: const Duration(milliseconds: 420),
-                    transitionBuilder: (child, animation) {
+                    transitionBuilder: (child, anim) {
                       final inAnim = Tween<Offset>(
-                              begin: const Offset(1, 0), end: Offset.zero)
-                          .chain(CurveTween(curve: Curves.easeOut))
-                          .animate(animation);
+                        begin: const Offset(1, 0),
+                        end: Offset.zero,
+                      ).animate(anim);
                       return SlideTransition(position: inAnim, child: child);
                     },
-                    child: _buildQuestionCard(questionMap, answers,
-                        key: ValueKey<int>(currentQuestion)),
+                    child: _buildQuestionCard(
+                      questionMap,
+                      answers,
+                      key: ValueKey(currentQuestion),
+                    ),
                   ),
-
                   const SizedBox(height: 24),
-
-                  // Check button
                   SizedBox(
                     width: 200,
                     child: ElevatedButton(
@@ -305,39 +401,22 @@ class _QuizSocialHardPageState extends State<QuizSocialHardPage> {
                       child: const Text(
                         'Check',
                         style: TextStyle(
-                            fontSize: 18,
-                            fontFamily: 'Poppins',
-                            fontWeight: FontWeight.bold),
+                          fontSize: 18,
+                          fontFamily: 'Poppins',
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ),
-
-                  const SizedBox(height: 12),
-
-                  // indikator soal
-                  Text(
-                    'Stage ${currentQuestion + 1} / ${questions.length}',
-                    style: const TextStyle(
-                        color: Colors.white, fontFamily: 'Poppins'),
-                  ),
-
                   const SizedBox(height: 18),
-
-                  // hearts (nyawa)
                   _buildLivesRow(),
-
                   const SizedBox(height: 10),
-
                   IconButton(
-                    icon: const Icon(Icons.arrow_back, color: Colors.white, size: 30),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
+                    icon: const Icon(Icons.arrow_back, color: Colors.white),
+                    onPressed: () => Navigator.of(context).pop(),
                   ),
                 ],
               ),
-
-              // overlay hasil (muncul ketika showResultOverlay == true)
               if (showResultOverlay) _buildResultOverlay(),
             ],
           ),
@@ -346,8 +425,7 @@ class _QuizSocialHardPageState extends State<QuizSocialHardPage> {
     );
   }
 
-  // widget question card
-  Widget _buildQuestionCard(Map<String, dynamic> questionMap, List<String> answers,
+  Widget _buildQuestionCard(Map<String, dynamic> q, List<String> answers,
       {Key? key}) {
     return Container(
       key: key,
@@ -356,25 +434,24 @@ class _QuizSocialHardPageState extends State<QuizSocialHardPage> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            padding:
-                const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+            padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
             decoration: BoxDecoration(
               color: Colors.white.withOpacity(0.92),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Text(
-              questionMap['question'] as String,
+              q['question'],
               textAlign: TextAlign.center,
               style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Poppins'),
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'Poppins',
+              ),
             ),
           ),
           const SizedBox(height: 12),
-          // jawaban
-          ...answers.map((answer) {
-            final bool isSelected = selectedAnswer == answer;
+          ...answers.map((ans) {
+            final isSelected = selectedAnswer == ans;
             return Container(
               margin: const EdgeInsets.symmetric(vertical: 6),
               width: 320,
@@ -388,27 +465,23 @@ class _QuizSocialHardPageState extends State<QuizSocialHardPage> {
                 ),
                 onPressed: showResultOverlay
                     ? null
-                    : () {
-                        setState(() {
-                          selectedAnswer = answer;
-                        });
-                      },
+                    : () => setState(() => selectedAnswer = ans),
                 child: Text(
-                  answer,
+                  ans,
                   style: const TextStyle(
-                      fontFamily: 'Poppins',
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16),
+                    fontFamily: 'Poppins',
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
                 ),
               ),
             );
-          }).toList(),
+          }),
         ],
       ),
     );
   }
 
-  // overlay result dengan animasi scale + opacity
   Widget _buildResultOverlay() {
     return Positioned(
       top: MediaQuery.of(context).size.height * 0.38,
@@ -424,8 +497,7 @@ class _QuizSocialHardPageState extends State<QuizSocialHardPage> {
             borderRadius: BorderRadius.circular(16),
             child: Container(
               width: MediaQuery.of(context).size.width * 0.6,
-              padding:
-                  const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+              padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(16),
@@ -433,25 +505,31 @@ class _QuizSocialHardPageState extends State<QuizSocialHardPage> {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // icon
                   Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: lastAnswerCorrect ? Colors.green[50] : Colors.red[50],
+                      color:
+                          lastAnswerCorrect ? Colors.green[50] : Colors.red[50],
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
                       lastAnswerCorrect ? Icons.check_circle : Icons.cancel,
-                      color: lastAnswerCorrect ? Colors.green : Colors.red,
+                      color:
+                          lastAnswerCorrect ? Colors.green : Colors.red,
                       size: 32,
                     ),
                   ),
                   const SizedBox(width: 16),
-                  // text
                   Expanded(
                     child: Text(
-                      lastAnswerCorrect ? 'Jawaban benar! +20 poin' : 'Jawaban salah! -5 poin',
-                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, fontFamily: 'Poppins'),
+                      lastAnswerCorrect
+                          ? 'Jawaban benar! +20 poin'
+                          : 'Jawaban salah! -5 poin',
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'Poppins',
+                      ),
                     ),
                   ),
                 ],
