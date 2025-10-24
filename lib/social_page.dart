@@ -37,16 +37,17 @@ class _HoverableButtonState extends State<HoverableButton> {
           decoration: BoxDecoration(
             color: isHovering ? widget.hoverColor : widget.color,
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: const Color(0xFF4D7584), width: 2),
+
+            // 🟩 Tambahan border agar garis tepi terlihat jelas
+            border: Border.all(
+              color: const Color.fromRGBO(209, 207, 170, 1), // warna border
+              width: 3, 
+            ),
+
             boxShadow: isHovering
                 ? [
                     BoxShadow(
-                      color: const Color.fromARGB(
-                        255,
-                        0,
-                        0,
-                        0,
-                      ).withOpacity(0.4),
+                      color: const Color.fromARGB(255, 0, 0, 0).withOpacity(0.4),
                       blurRadius: 20,
                       spreadRadius: 5,
                       offset: const Offset(0, 8),
@@ -54,12 +55,7 @@ class _HoverableButtonState extends State<HoverableButton> {
                   ]
                 : [
                     BoxShadow(
-                      color: const Color.fromARGB(
-                        255,
-                        0,
-                        0,
-                        0,
-                      ).withOpacity(0.1),
+                      color: const Color.fromARGB(255, 0, 0, 0).withOpacity(0.1),
                       blurRadius: 4,
                       spreadRadius: 1,
                       offset: const Offset(0, 2),
@@ -67,15 +63,14 @@ class _HoverableButtonState extends State<HoverableButton> {
                   ],
           ),
           transform: isHovering
-              ? (Matrix4.identity()
-                  ..translate(0, -5, 0)) // naikkan sedikit saat hover
+              ? (Matrix4.identity()..translate(0, -5, 0))
               : Matrix4.identity(),
           child: Center(
             child: Text(
               widget.label,
               style: const TextStyle(
                 fontSize: 24,
-                color: Color.fromARGB(255, 246, 238, 180),
+                color: Color.fromARGB(255, 231, 224, 167),
                 fontWeight: FontWeight.bold,
                 fontFamily: 'Poppins',
                 shadows: [
@@ -115,8 +110,8 @@ class SocialPage extends StatelessWidget {
 
               HoverableButton(
                 label: 'Easy',
-                color: const Color.fromARGB(255, 153, 214, 20).withOpacity(0.9),
-                hoverColor: const Color.fromARGB(255, 140, 255, 9),
+                color: const Color(0xFF4D7584).withOpacity(0.9),
+                hoverColor: const Color.fromARGB(255, 129, 221, 25),
                 onTap: () {
                   Navigator.pushNamed(context, '/quiz_social_easy');
                 },
@@ -124,13 +119,9 @@ class SocialPage extends StatelessWidget {
 
               HoverableButton(
                 label: 'Hard',
-                color: const Color.fromARGB(255, 223, 14, 14).withOpacity(0.9),
-                hoverColor: const Color.fromARGB(
-                  255,
-                  255,
-                  0,
-                  0,
-                ).withOpacity(0.9),
+                color: const Color(0xFF4D7584).withOpacity(0.9),
+                hoverColor:
+                    const Color.fromARGB(255, 255, 0, 0).withOpacity(0.9),
                 onTap: () {
                   Navigator.pushNamed(context, '/quiz_social_hard');
                 },
@@ -142,9 +133,9 @@ class SocialPage extends StatelessWidget {
                 padding: const EdgeInsets.only(bottom: 40),
                 child: IconButton(
                   icon: const Icon(
-                    Icons.arrow_back,
+                    Icons.home,
                     size: 50,
-                    color: Colors.white,
+                    color: Color.fromRGBO(209, 207, 170, 1),
                   ),
                   onPressed: () => Navigator.pop(context),
                 ),

@@ -37,7 +37,7 @@ class _HomePageState extends State<HomePage> {
                   height: _isHovered ? 60 : 55,   // animasi tinggi juga
                   decoration: BoxDecoration(
                     color: _isHovered
-                        ? const Color.fromARGB(255, 209, 207, 170)
+                        ? const Color.fromRGBO(209, 207, 170, 1)
                         : const Color(0xFF4D7584).withOpacity(0.9),
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(

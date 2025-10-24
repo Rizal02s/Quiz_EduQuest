@@ -13,14 +13,12 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        fontFamily: 'Poppins',  // Set Poppins sebagai default font
-      ),
+      theme: ThemeData(fontFamily: 'Poppins'),
       routes: {
         '/': (_) => HomePage(),
         '/social': (_) => SocialPage(),
-        '/quiz_social_easy': (_) => QuizSocialEasyPage(), 
-        '/quiz_social_hard': (_) => QuizSocialHardPage(), 
+        '/quiz_social_easy': (_) => QuizSocialEasyPage(),
+        '/quiz_social_hard': (_) => QuizSocialHardPage(),
       },
       initialRoute: '/',
     );

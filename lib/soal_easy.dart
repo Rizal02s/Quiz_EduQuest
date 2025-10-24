@@ -8,7 +8,7 @@ final List<Map<String, dynamic>> questions = [
   },
   {
     'question': 'Pemimpin partai PKI adalah …',
-    'answers': ['D.N. Aidit', 'Musso', 'Bahlil Goblins', 'Semaun'],
+    'answers': ['D.N. Aidit', 'Musso', 'Vladimir Bahlil', 'Semaun'],
     'correct': 'Semaun',
   },
   {
@@ -113,14 +113,10 @@ final List<Map<String, dynamic>> questions = [
     'correct': 'Ide Marx-Lenin',
   },
   {
-    'question': 'Sebab khusus terjadinya Perang Dunia ke-1 adalah …',
-    'answers': [
-      'Ideologi',
-      'Kematian Franz Ferdinan',
-      'Revolusi Eropa',
-      'Megawati',
-    ],
-    'correct': 'Kematian Franz Ferdinan',
+    'question':
+        'Planet yang dikenal sebagai "Planet Merah" dalam tata surya kita adalah..',
+    'answers': ['Mars', 'Jupiter', 'Venus', 'Saturnus'],
+    'correct': 'Mars',
   },
   {
     'question': 'Berikut ini yang termasuk konduktor panas yang baik adalah..',

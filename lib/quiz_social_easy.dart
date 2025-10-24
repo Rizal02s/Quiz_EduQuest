@@ -284,7 +284,7 @@ class _QuizSocialEasyPageState extends State<QuizSocialEasyPage> {
 
                   IconButton(
                     icon: const Icon(
-                      Icons.arrow_back,
+                      Icons.flag,
                       color: Colors.white,
                       size: 30,
                     ),
