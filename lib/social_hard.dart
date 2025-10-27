@@ -46,19 +46,19 @@ final List<Map<String, dynamic>> questions = [
   {
     'question': 'Armenian Genocide terjadi karena kerajaan Ottoman…',
     'answers': [
-      'Kalah Perang melawan Kekaisaran Rusia',
+      'Kalah Perang melawan Rusia',
       'Menganut Ateis',
       'Krisis Ekonomi',
-      'Tidak Mampu Mengatur Pemerintahan',
+      'Pemberontakan',
     ],
-    'correct': 'Kalah Perang melawan Kekaisaran Rusia',
+    'correct': 'Kalah Perang melawan Rusia',
   },
   {
     'question': 'Salah satu dampak dari Reformasi Gereja adalah …',
     'answers': [
       'Munculnya ajaran Protestan',
       'Bubarnya Kekaisaran Romawi',
-      'Michaelangelo Bunorrotti Menjadi Paus',
+      'Penemuan Benua Amerika',
       'Perang Salib',
     ],
     'correct': 'Munculnya ajaran Protestan',
@@ -107,23 +107,30 @@ final List<Map<String, dynamic>> questions = [
   {
     'question':
         'Daerah Indonesia yang saat ini masih menganut sistem monarki adalah …',
-    'answers': ['Aceh Darussalam', 'Bandung', 'Los Santos', 'Yogyakarta'],
+    'answers': ['Aceh Darussalam', 'Bandung', 'DKI Jakarta', 'Yogyakarta'],
     'correct': 'Yogyakarta',
   },
   {
-    'question': 'Pemimpin partai PKI adalah …',
-    'answers': ['D.N. Aidit', 'Musso', 'Bahlil Goblins', 'Semaun'],
-    'correct': 'D.N. Aidit',
+    'question':
+        'Akronim M.A.I.N. yang sering digunakan untuk menjelaskan penyebab jangka panjang Perang Dunia I merujuk pada...',
+    'answers': [
+      'Militer, Aliansi, imperial, Nasionalisme',
+      'Monarki, Aliansi, Industri, Nasionalisme',
+      'Modal, Agresi, Invasi, Negosiasi',
+      'Mobilisasi, Aksi, Imperial, Negosiasi',
+    ],
+    'correct': 'Militer, Aliansi, imperial, Nasionalisme',
   },
   {
-    'question': 'Penggagas utama Indische Partij adalah …',
+    'question':
+        ' Krisis yang terjadi di Maroko (1905 dan 1911) antara Jerman melawan Prancis dan Inggris merupakan contoh nyata dari ketegangan akibat...',
     'answers': [
-      'Soekarno',
-      'Moh.Hatta',
-      'Danudirja Setyabudi',
-      'Ki Hajar Dewantara',
+      'Perang Dunia 1',
+      'Pengkhianatan Aliansi',
+      'Perebutan Kolonialisme',
+      'Nasionalisme etnis di Balkan',
     ],
-    'correct': 'Danudirja Setyabudi',
+    'correct': 'Perebutan Kolonialisme',
   },
   {
     'question':
@@ -142,8 +149,7 @@ final List<Map<String, dynamic>> questions = [
     'correct': 'Kematian Franz Ferdinan',
   },
   {
-    'question':
-        'Pemimpin reformis yang berperan besar dalam runtuhnya Uni Soviet adalah …',
+    'question': 'Bagaimana ',
     'answers': [
       'Vladimir Bahlil',
       'Gibran',

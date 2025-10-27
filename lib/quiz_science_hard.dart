@@ -1,15 +1,15 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'social_easy.dart';
+import '../data/science_hard.dart'; // ✅ Import soal science hard
 
-class QuizSocialEasyPage extends StatefulWidget {
-  const QuizSocialEasyPage({Key? key}) : super(key: key);
+class QuizScienceHardPage extends StatefulWidget {
+  const QuizScienceHardPage({Key? key}) : super(key: key);
 
   @override
-  State<QuizSocialEasyPage> createState() => _QuizSocialEasyPageState();
+  State<QuizScienceHardPage> createState() => _QuizScienceHardPageState();
 }
 
-class _QuizSocialEasyPageState extends State<QuizSocialEasyPage> {
+class _QuizScienceHardPageState extends State<QuizScienceHardPage> {
   int currentQuestion = 0;
   int score = 0;
   String? selectedAnswer;
@@ -21,15 +21,14 @@ class _QuizSocialEasyPageState extends State<QuizSocialEasyPage> {
   final Duration resultDuration = const Duration(milliseconds: 900);
 
   // ===== timer quiz =====
-  int timeLeft = 15;
+  int timeLeft = 20; // ✅ Waktu lebih sedikit untuk level hard
   Timer? timer;
 
-  // === START COUNTDOWN (DITAMBAHKAN) ===
+  // === START COUNTDOWN ===
   int startCountdown = 5;
   Timer? startCountdownTimer;
   bool showStartOverlay = true;
 
-  // fungsi untuk memulai hitung mundur start (5..1) lalu memulai quiz
   void startStartCountdown() {
     startCountdownTimer?.cancel();
     startCountdown = 5;
@@ -44,16 +43,15 @@ class _QuizSocialEasyPageState extends State<QuizSocialEasyPage> {
           setState(() {
             showStartOverlay = false;
           });
-          startTimer(); // mulai timer quiz setelah countdown selesai
+          startTimer();
         }
       });
     });
   }
 
-  // ===== quiz timer functions =====
   void startTimer() {
     timer?.cancel();
-    timeLeft = 15;
+    timeLeft = 20; // ✅ 20 detik untuk level hard
     timer = Timer.periodic(const Duration(seconds: 1), (t) {
       setState(() {
         timeLeft--;
@@ -63,7 +61,7 @@ class _QuizSocialEasyPageState extends State<QuizSocialEasyPage> {
             timer?.cancel();
             _showGameOverDialog();
           } else {
-            timeLeft = 15;
+            timeLeft = 20; // ✅ Reset ke 20 detik
           }
         }
       });
@@ -92,7 +90,7 @@ class _QuizSocialEasyPageState extends State<QuizSocialEasyPage> {
                 selectedAnswer = null;
                 showResultOverlay = false;
               });
-              startStartCountdown(); // restart countdown saat mulai ulang quiz
+              startStartCountdown();
             },
             child: const Text('Try Again'),
           ),
@@ -104,7 +102,7 @@ class _QuizSocialEasyPageState extends State<QuizSocialEasyPage> {
   @override
   void initState() {
     super.initState();
-    startStartCountdown(); // panggil countdown sebelum quiz dimulai
+    startStartCountdown();
   }
 
   @override
@@ -122,7 +120,8 @@ class _QuizSocialEasyPageState extends State<QuizSocialEasyPage> {
       return;
     }
 
-    final correct = (questions[currentQuestion]['correct'] as String)
+    // ✅ GUNAKAN questionsScienceHard
+    final correct = (questionsScienceHard[currentQuestion]['correct'] as String)
         .trim()
         .toLowerCase();
     final selected = selectedAnswer!.trim().toLowerCase();
@@ -132,7 +131,7 @@ class _QuizSocialEasyPageState extends State<QuizSocialEasyPage> {
       lastAnswerCorrect = isCorrect;
       showResultOverlay = true;
       if (isCorrect)
-        score += 20;
+        score += 30; // ✅ Poin lebih banyak untuk level hard
       else {
         lives = lives - 1;
         if (lives < 0) lives = 0;
@@ -141,7 +140,7 @@ class _QuizSocialEasyPageState extends State<QuizSocialEasyPage> {
 
     Future.delayed(resultDuration, () {
       if (isCorrect) {
-        if (currentQuestion >= questions.length - 1) {
+        if (currentQuestion >= questionsScienceHard.length - 1) {
           stopTimer();
           setState(() => showResultOverlay = false);
           showDialog(
@@ -178,7 +177,7 @@ class _QuizSocialEasyPageState extends State<QuizSocialEasyPage> {
             showResultOverlay = false;
             selectedAnswer = null;
           });
-          startTimer(); // restart timer untuk soal yang sama
+          startTimer();
         }
       }
     });
@@ -202,7 +201,8 @@ class _QuizSocialEasyPageState extends State<QuizSocialEasyPage> {
 
   @override
   Widget build(BuildContext context) {
-    final questionMap = questions[currentQuestion];
+    // ✅ GUNAKAN questionsScienceHard
+    final questionMap = questionsScienceHard[currentQuestion];
     final answers = List<String>.from(questionMap['answers']);
 
     return Scaffold(
@@ -223,7 +223,7 @@ class _QuizSocialEasyPageState extends State<QuizSocialEasyPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    'Stage ${currentQuestion + 1} / ${questions.length}',
+                    'Stage ${currentQuestion + 1} / ${questionsScienceHard.length}',
                     style: const TextStyle(
                       color: Colors.white,
                       fontFamily: 'Poppins',
@@ -260,9 +260,7 @@ class _QuizSocialEasyPageState extends State<QuizSocialEasyPage> {
                   SizedBox(
                     width: 200,
                     child: ElevatedButton(
-                      // DISABLE tombol Check saat overlay start masih aktif
-                      onPressed:
-                          selectedAnswer == null ||
+                      onPressed: selectedAnswer == null ||
                               showResultOverlay ||
                               showStartOverlay
                           ? null
@@ -295,10 +293,7 @@ class _QuizSocialEasyPageState extends State<QuizSocialEasyPage> {
                 ],
               ),
 
-              // overlay hasil
               if (showResultOverlay) _buildResultOverlay(),
-
-              // === overlay start countdown (DITAMBAHKAN) ===
               if (showStartOverlay) _buildStartOverlay(),
             ],
           ),
@@ -342,14 +337,11 @@ class _QuizSocialEasyPageState extends State<QuizSocialEasyPage> {
               width: 320,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: isSelected
-                      ? Colors.lightBlueAccent
-                      : Colors.white,
+                  backgroundColor: isSelected ? Colors.lightBlueAccent : Colors.white,
                   foregroundColor: isSelected ? Colors.white : Colors.black,
                   shape: const StadiumBorder(),
                   padding: const EdgeInsets.symmetric(vertical: 14),
                 ),
-                // DISABLE pilihan jawaban saat start overlay aktif
                 onPressed: showResultOverlay || showStartOverlay
                     ? null
                     : () => setState(() => selectedAnswer = ans),
@@ -369,7 +361,6 @@ class _QuizSocialEasyPageState extends State<QuizSocialEasyPage> {
     );
   }
 
-  // ===== START OVERLAY WIDGET (DITAMBAHKAN) =====
   Widget _buildStartOverlay() {
     return Positioned.fill(
       child: Container(
@@ -384,10 +375,7 @@ class _QuizSocialEasyPageState extends State<QuizSocialEasyPage> {
               curve: Curves.easeOutBack,
               child: Container(
                 margin: const EdgeInsets.symmetric(horizontal: 24),
-                padding: const EdgeInsets.symmetric(
-                  vertical: 18,
-                  horizontal: 22,
-                ),
+                padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 22),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(14),
@@ -422,8 +410,12 @@ class _QuizSocialEasyPageState extends State<QuizSocialEasyPage> {
                     ),
                     const SizedBox(height: 8),
                     const Text(
-                      'Siapkan dirimu!',
-                      style: TextStyle(fontSize: 14, fontFamily: 'Poppins'),
+                      'Siapkan dirimu! Level HARD',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontFamily: 'Poppins',
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ],
                 ),
@@ -461,9 +453,7 @@ class _QuizSocialEasyPageState extends State<QuizSocialEasyPage> {
                   Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: lastAnswerCorrect
-                          ? Colors.green[50]
-                          : Colors.red[50],
+                      color: lastAnswerCorrect ? Colors.green[50] : Colors.red[50],
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
@@ -476,7 +466,7 @@ class _QuizSocialEasyPageState extends State<QuizSocialEasyPage> {
                   Expanded(
                     child: Text(
                       lastAnswerCorrect
-                          ? 'Jawaban benar! +20 poin'
+                          ? 'Jawaban benar! +30 poin' // ✅ Poin lebih banyak
                           : 'Jawaban salah! -5 poin',
                       style: const TextStyle(
                         fontSize: 18,

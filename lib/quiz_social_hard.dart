@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'soal_hard.dart'; // ✅ import soal dari file terpisah
+import 'social_hard.dart'; // ✅ import soal dari file terpisah
 
 class QuizSocialHardPage extends StatefulWidget {
   const QuizSocialHardPage({Key? key}) : super(key: key);
@@ -19,12 +19,46 @@ class _QuizSocialHardPageState extends State<QuizSocialHardPage> {
   bool lastAnswerCorrect = false;
 
   final Duration resultDuration = const Duration(milliseconds: 900);
-  int timeLeft = 15;
+
+  // ===== timer quiz (sudah ada) =====
+  int timeLeft = 20;
   Timer? timer;
 
+  // === START COUNTDOWN (DITAMBAHKAN) ===
+  // overlay countdown sebelum quiz dimulai
+  int startCountdown = 5; // hitung mundur awal (detik)
+  Timer? startCountdownTimer; // timer untuk hitung mundur start
+  bool showStartOverlay =
+      true; // overlay start akan tampil saat masuk halaman (blok interaksi) <-- ADDED
+
+  // fungsi untuk memulai hitung mundur start (5..1) lalu memulai quiz
+  void startStartCountdown() {
+    // pastikan membatalkan jika ada sisa timer
+    startCountdownTimer?.cancel();
+    startCountdown = 5; // reset ke 5 detik setiap kali dipanggil
+    setState(() {
+      showStartOverlay = true; // tampilkan overlay start
+    });
+    startCountdownTimer = Timer.periodic(const Duration(seconds: 1), (t) {
+      setState(() {
+        startCountdown--;
+        if (startCountdown <= 0) {
+          // ketika countdown selesai, hilangkan overlay dan mulai timer quiz
+          t.cancel();
+          setState(() {
+            showStartOverlay = false;
+          });
+          startTimer(); // mulai timer quiz setelah countdown selesai <-- ADDED
+        }
+      });
+    });
+  }
+
+  // ===== quiz timer functions (sudah ada) =====
   void startTimer() {
+    // pastikan membatalkan timer lama kalau ada
     timer?.cancel();
-    timeLeft = 15;
+    timeLeft = 20;
     timer = Timer.periodic(const Duration(seconds: 1), (t) {
       setState(() {
         timeLeft--;
@@ -34,7 +68,7 @@ class _QuizSocialHardPageState extends State<QuizSocialHardPage> {
             timer?.cancel();
             _showGameOverDialog();
           } else {
-            timeLeft = 15;
+            timeLeft = 20;
           }
         }
       });
@@ -63,7 +97,8 @@ class _QuizSocialHardPageState extends State<QuizSocialHardPage> {
                 selectedAnswer = null;
                 showResultOverlay = false;
               });
-              startTimer();
+              // restart start countdown agar user melihat peringatan lagi saat mulai ulang
+              startStartCountdown(); // <-- ADDED: restart countdown saat mulai ulang quiz
             },
             child: const Text('Try Again'),
           ),
@@ -75,21 +110,25 @@ class _QuizSocialHardPageState extends State<QuizSocialHardPage> {
   @override
   void initState() {
     super.initState();
-    startTimer();
+    // Jangan langsung startTimer() --- gunakan startStartCountdown sehingga
+    // quiz timer hanya berjalan setelah countdown start selesai.
+    startStartCountdown(); // <-- ADDED: panggil countdown sebelum quiz dimulai
   }
 
   @override
   void dispose() {
+    // batalkan kedua timer agar tidak leak
     timer?.cancel();
+    startCountdownTimer?.cancel(); // <-- ADDED: cancel start countdown timer
     super.dispose();
   }
 
   // ✅ Soal diambil dari soal_hard.dart
   void onCheckPressed() {
     if (selectedAnswer == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Pilih jawaban terlebih dahulu')),
-      );
+      // REMOVED: SnackBar ditampilkan di sini sebelumnya.
+      // Sesuai permintaan, kita HAPUS pemanggilan SnackBar supaya tidak muncul.
+      // Cukup return agar fungsi berhenti jika belum memilih jawaban.
       return;
     }
 
@@ -138,6 +177,7 @@ class _QuizSocialHardPageState extends State<QuizSocialHardPage> {
             selectedAnswer = null;
             showResultOverlay = false;
           });
+          // restart timer untuk soal berikutnya (jika sudah lewat start countdown)
           startTimer();
         }
       } else {
@@ -230,7 +270,12 @@ class _QuizSocialHardPageState extends State<QuizSocialHardPage> {
                   SizedBox(
                     width: 200,
                     child: ElevatedButton(
-                      onPressed: selectedAnswer == null || showResultOverlay
+                      // DISABLE tombol Check saat overlay start masih aktif agar user
+                      // tidak bisa maju sebelum quiz benar-benar dimulai. <-- ADDED
+                      onPressed:
+                          selectedAnswer == null ||
+                              showResultOverlay ||
+                              showStartOverlay // <-- ADDED: blok saat start countdown
                           ? null
                           : onCheckPressed,
                       style: ElevatedButton.styleFrom(
@@ -260,7 +305,12 @@ class _QuizSocialHardPageState extends State<QuizSocialHardPage> {
                   ),
                 ],
               ),
+
+              // overlay hasil (muncul ketika showResultOverlay == true)
               if (showResultOverlay) _buildResultOverlay(),
+
+              // === overlay start countdown (DITAMBAHKAN) ===
+              if (showStartOverlay) _buildStartOverlay(), // <-- ADDED
             ],
           ),
         ),
@@ -268,8 +318,11 @@ class _QuizSocialHardPageState extends State<QuizSocialHardPage> {
     );
   }
 
-  Widget _buildQuestionCard(Map<String, dynamic> q, List<String> answers,
-      {Key? key}) {
+  Widget _buildQuestionCard(
+    Map<String, dynamic> q,
+    List<String> answers, {
+    Key? key,
+  }) {
     return Container(
       key: key,
       margin: const EdgeInsets.symmetric(horizontal: 24),
@@ -300,13 +353,15 @@ class _QuizSocialHardPageState extends State<QuizSocialHardPage> {
               width: 320,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor:
-                      isSelected ? Colors.lightBlueAccent : Colors.white,
+                  backgroundColor: isSelected
+                      ? Colors.lightBlueAccent
+                      : Colors.white,
                   foregroundColor: isSelected ? Colors.white : Colors.black,
                   shape: const StadiumBorder(),
                   padding: const EdgeInsets.symmetric(vertical: 14),
                 ),
-                onPressed: showResultOverlay
+                // DISABLE pilihan jawaban saat start overlay aktif <-- ADDED
+                onPressed: showResultOverlay || showStartOverlay
                     ? null
                     : () => setState(() => selectedAnswer = ans),
                 child: Text(
@@ -321,6 +376,72 @@ class _QuizSocialHardPageState extends State<QuizSocialHardPage> {
             );
           }),
         ],
+      ),
+    );
+  }
+
+  // ===== START OVERLAY WIDGET (DITAMBAHKAN) =====
+  Widget _buildStartOverlay() {
+    return Positioned.fill(
+      child: Container(
+        color: Colors.black.withOpacity(0.45), // dim background
+        child: Center(
+          child: AnimatedOpacity(
+            opacity: showStartOverlay ? 1.0 : 0.0,
+            duration: const Duration(milliseconds: 300),
+            child: AnimatedScale(
+              scale: showStartOverlay ? 1.0 : 0.8,
+              duration: const Duration(milliseconds: 350),
+              curve: Curves.easeOutBack,
+              child: Container(
+                margin: const EdgeInsets.symmetric(horizontal: 24),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 18,
+                  horizontal: 22,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(14),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      blurRadius: 12,
+                      offset: const Offset(0, 6),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text(
+                      'Quiz akan dimulai dalam',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        fontFamily: 'Poppins',
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      '$startCountdown',
+                      style: const TextStyle(
+                        fontSize: 48,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.amber,
+                        fontFamily: 'Poppins',
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    const Text(
+                      'Siapkan dirimu!',
+                      style: TextStyle(fontSize: 14, fontFamily: 'Poppins'),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -351,8 +472,9 @@ class _QuizSocialHardPageState extends State<QuizSocialHardPage> {
                   Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color:
-                          lastAnswerCorrect ? Colors.green[50] : Colors.red[50],
+                      color: lastAnswerCorrect
+                          ? Colors.green[50]
+                          : Colors.red[50],
                       shape: BoxShape.circle,
                     ),
                     child: Icon(

@@ -93,7 +93,7 @@ final List<Map<String, dynamic>> questions = [
   {
     'question':
         'Daerah Indonesia yang saat ini masih menganut sistem monarki adalah …',
-    'answers': ['Aceh Darussalam', 'Bandung', 'Los Santos', 'Yogyakarta'],
+    'answers': ['Aceh Darussalam', 'Bandung', 'DKI Jakarta', 'Yogyakarta'],
     'correct': 'Yogyakarta',
   },
   {
