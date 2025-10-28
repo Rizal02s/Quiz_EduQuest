@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import '../data/science_easy.dart'; // ✅ Import yang benar
+import 'science_easy.dart'; // ✅ Import yang benar
 
 class QuizScienceEasyPage extends StatefulWidget {
   const QuizScienceEasyPage({Key? key}) : super(key: key);
@@ -21,7 +21,7 @@ class _QuizScienceEasyPageState extends State<QuizScienceEasyPage> {
   final Duration resultDuration = const Duration(milliseconds: 900);
 
   // ===== timer quiz =====
-  int timeLeft = 15;
+  int timeLeft = 20;
   Timer? timer;
 
   // === START COUNTDOWN ===
@@ -51,7 +51,7 @@ class _QuizScienceEasyPageState extends State<QuizScienceEasyPage> {
 
   void startTimer() {
     timer?.cancel();
-    timeLeft = 15;
+    timeLeft = 20;
     timer = Timer.periodic(const Duration(seconds: 1), (t) {
       setState(() {
         timeLeft--;
@@ -61,7 +61,7 @@ class _QuizScienceEasyPageState extends State<QuizScienceEasyPage> {
             timer?.cancel();
             _showGameOverDialog();
           } else {
-            timeLeft = 15;
+            timeLeft = 20;
           }
         }
       });
@@ -211,7 +211,7 @@ class _QuizScienceEasyPageState extends State<QuizScienceEasyPage> {
         height: double.infinity,
         decoration: const BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('assets/img/background.jpg'),
+            image: AssetImage('assets/img/bg.nature.jpg'),
             fit: BoxFit.cover,
           ),
         ),
@@ -260,7 +260,8 @@ class _QuizScienceEasyPageState extends State<QuizScienceEasyPage> {
                   SizedBox(
                     width: 200,
                     child: ElevatedButton(
-                      onPressed: selectedAnswer == null ||
+                      onPressed:
+                          selectedAnswer == null ||
                               showResultOverlay ||
                               showStartOverlay
                           ? null
@@ -337,7 +338,9 @@ class _QuizScienceEasyPageState extends State<QuizScienceEasyPage> {
               width: 320,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: isSelected ? Colors.lightBlueAccent : Colors.white,
+                  backgroundColor: isSelected
+                      ? Colors.lightBlueAccent
+                      : Colors.white,
                   foregroundColor: isSelected ? Colors.white : Colors.black,
                   shape: const StadiumBorder(),
                   padding: const EdgeInsets.symmetric(vertical: 14),
@@ -375,7 +378,10 @@ class _QuizScienceEasyPageState extends State<QuizScienceEasyPage> {
               curve: Curves.easeOutBack,
               child: Container(
                 margin: const EdgeInsets.symmetric(horizontal: 24),
-                padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 22),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 18,
+                  horizontal: 22,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(14),
@@ -411,10 +417,7 @@ class _QuizScienceEasyPageState extends State<QuizScienceEasyPage> {
                     const SizedBox(height: 8),
                     const Text(
                       'Siapkan dirimu!',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontFamily: 'Poppins',
-                      ),
+                      style: TextStyle(fontSize: 14, fontFamily: 'Poppins'),
                     ),
                   ],
                 ),
@@ -452,7 +455,9 @@ class _QuizScienceEasyPageState extends State<QuizScienceEasyPage> {
                   Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: lastAnswerCorrect ? Colors.green[50] : Colors.red[50],
+                      color: lastAnswerCorrect
+                          ? Colors.green[50]
+                          : Colors.red[50],
                       shape: BoxShape.circle,
                     ),
                     child: Icon(

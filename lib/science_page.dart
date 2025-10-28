@@ -98,7 +98,7 @@ class SciencePage extends StatelessWidget {
           height: double.infinity,
           decoration: const BoxDecoration(
             image: DecorationImage(
-              image: AssetImage('assets/img/Historia.jpg'),
+              image: AssetImage('assets/img/science.page.jpg'),
               fit: BoxFit.cover,
             ),
           ),

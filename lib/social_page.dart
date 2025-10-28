@@ -99,7 +99,7 @@ class SocialPage extends StatelessWidget {
           height: double.infinity,
           decoration: const BoxDecoration(
             image: DecorationImage(
-              image: AssetImage('assets/img/Historia.jpg'),
+              image: AssetImage('assets/img/bg.page.jpg'),
               fit: BoxFit.cover,
             ),
           ),
@@ -110,7 +110,7 @@ class SocialPage extends StatelessWidget {
 
               HoverableButton(
                 label: 'Easy',
-                color: const Color(0xFF4D7584).withOpacity(0.9),
+                color: const Color.fromARGB(255, 48, 12, 1).withOpacity(0.9),
                 hoverColor: const Color.fromARGB(255, 129, 221, 25),
                 onTap: () {
                   Navigator.pushNamed(context, '/quiz_social_easy');
@@ -119,7 +119,7 @@ class SocialPage extends StatelessWidget {
 
               HoverableButton(
                 label: 'Hard',
-                color: const Color(0xFF4D7584).withOpacity(0.9),
+                color: const Color.fromARGB(255, 48, 12, 1).withOpacity(0.9),
                 hoverColor:
                     const Color.fromARGB(255, 255, 0, 0).withOpacity(0.9),
                 onTap: () {
@@ -135,7 +135,7 @@ class SocialPage extends StatelessWidget {
                   icon: const Icon(
                     Icons.home,
                     size: 50,
-                    color: Color.fromRGBO(209, 207, 170, 1),
+                    color: Color.fromARGB(255, 48, 12, 1),
                   ),
                   onPressed: () => Navigator.pop(context),
                 ),

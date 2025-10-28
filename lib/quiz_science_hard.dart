@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import '../data/science_hard.dart'; // ✅ Import soal science hard
+import 'science_hard.dart'; // ✅ Import soal science hard
 
 class QuizScienceHardPage extends StatefulWidget {
   const QuizScienceHardPage({Key? key}) : super(key: key);
@@ -211,7 +211,7 @@ class _QuizScienceHardPageState extends State<QuizScienceHardPage> {
         height: double.infinity,
         decoration: const BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('assets/img/background.jpg'),
+            image: AssetImage('assets/img/science.hard.jpeg'),
             fit: BoxFit.cover,
           ),
         ),
@@ -260,7 +260,8 @@ class _QuizScienceHardPageState extends State<QuizScienceHardPage> {
                   SizedBox(
                     width: 200,
                     child: ElevatedButton(
-                      onPressed: selectedAnswer == null ||
+                      onPressed:
+                          selectedAnswer == null ||
                               showResultOverlay ||
                               showStartOverlay
                           ? null
@@ -337,7 +338,9 @@ class _QuizScienceHardPageState extends State<QuizScienceHardPage> {
               width: 320,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: isSelected ? Colors.lightBlueAccent : Colors.white,
+                  backgroundColor: isSelected
+                      ? Colors.lightBlueAccent
+                      : Colors.white,
                   foregroundColor: isSelected ? Colors.white : Colors.black,
                   shape: const StadiumBorder(),
                   padding: const EdgeInsets.symmetric(vertical: 14),
@@ -375,7 +378,10 @@ class _QuizScienceHardPageState extends State<QuizScienceHardPage> {
               curve: Curves.easeOutBack,
               child: Container(
                 margin: const EdgeInsets.symmetric(horizontal: 24),
-                padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 22),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 18,
+                  horizontal: 22,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(14),
@@ -410,7 +416,7 @@ class _QuizScienceHardPageState extends State<QuizScienceHardPage> {
                     ),
                     const SizedBox(height: 8),
                     const Text(
-                      'Siapkan dirimu! Level HARD',
+                      'Siapkan dirimu!',
                       style: TextStyle(
                         fontSize: 14,
                         fontFamily: 'Poppins',
@@ -453,7 +459,9 @@ class _QuizScienceHardPageState extends State<QuizScienceHardPage> {
                   Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: lastAnswerCorrect ? Colors.green[50] : Colors.red[50],
+                      color: lastAnswerCorrect
+                          ? Colors.green[50]
+                          : Colors.red[50],
                       shape: BoxShape.circle,
                     ),
                     child: Icon(

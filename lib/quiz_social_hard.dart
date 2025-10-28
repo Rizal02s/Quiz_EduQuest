@@ -221,7 +221,7 @@ class _QuizSocialHardPageState extends State<QuizSocialHardPage> {
         height: double.infinity,
         decoration: const BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('assets/img/background.jpg'),
+            image: AssetImage('assets/img/social.hard.jpg'),
             fit: BoxFit.cover,
           ),
         ),

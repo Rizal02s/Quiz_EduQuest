@@ -21,7 +21,7 @@ class _QuizSocialEasyPageState extends State<QuizSocialEasyPage> {
   final Duration resultDuration = const Duration(milliseconds: 900);
 
   // ===== timer quiz =====
-  int timeLeft = 15;
+  int timeLeft = 20;
   Timer? timer;
 
   // === START COUNTDOWN (DITAMBAHKAN) ===
@@ -53,7 +53,7 @@ class _QuizSocialEasyPageState extends State<QuizSocialEasyPage> {
   // ===== quiz timer functions =====
   void startTimer() {
     timer?.cancel();
-    timeLeft = 15;
+    timeLeft = 20;
     timer = Timer.periodic(const Duration(seconds: 1), (t) {
       setState(() {
         timeLeft--;
@@ -63,7 +63,7 @@ class _QuizSocialEasyPageState extends State<QuizSocialEasyPage> {
             timer?.cancel();
             _showGameOverDialog();
           } else {
-            timeLeft = 15;
+            timeLeft = 20;
           }
         }
       });
@@ -211,7 +211,7 @@ class _QuizSocialEasyPageState extends State<QuizSocialEasyPage> {
         height: double.infinity,
         decoration: const BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('assets/img/background.jpg'),
+            image: AssetImage('assets/img/social.easy.jpg'),
             fit: BoxFit.cover,
           ),
         ),
@@ -269,7 +269,7 @@ class _QuizSocialEasyPageState extends State<QuizSocialEasyPage> {
                           : onCheckPressed,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: selectedAnswer == null
-                            ? Colors.grey
+                            ? const Color.fromARGB(255, 237, 248, 203)
                             : Colors.greenAccent,
                         foregroundColor: Colors.black,
                         shape: const StadiumBorder(),
@@ -321,7 +321,7 @@ class _QuizSocialEasyPageState extends State<QuizSocialEasyPage> {
           Container(
             padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.92),
+              color: const Color.fromARGB(255, 255, 255, 255).withOpacity(0.92),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Text(
