@@ -39,6 +39,7 @@ flutter:
     - assets/img/science.easy.jpg
     - assets/img/science.hard.jpeg
     - assets/img/bg.nature.jpg
+    - assets/img/social.page.jpg
 
   fonts:
     - family: Poppins

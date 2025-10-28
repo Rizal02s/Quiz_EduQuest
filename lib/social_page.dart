@@ -32,7 +32,7 @@ class _HoverableButtonState extends State<HoverableButton> {
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 300),
           margin: const EdgeInsets.symmetric(horizontal: 48, vertical: 16),
-          width: 350,
+          width: 400,
           height: 55,
           decoration: BoxDecoration(
             color: isHovering ? widget.hoverColor : widget.color,
@@ -41,13 +41,18 @@ class _HoverableButtonState extends State<HoverableButton> {
             // 🟩 Tambahan border agar garis tepi terlihat jelas
             border: Border.all(
               color: const Color.fromRGBO(209, 207, 170, 1), // warna border
-              width: 3, 
+              width: 3,
             ),
 
             boxShadow: isHovering
                 ? [
                     BoxShadow(
-                      color: const Color.fromARGB(255, 0, 0, 0).withOpacity(0.4),
+                      color: const Color.fromARGB(
+                        255,
+                        0,
+                        0,
+                        0,
+                      ).withOpacity(0.4),
                       blurRadius: 20,
                       spreadRadius: 5,
                       offset: const Offset(0, 8),
@@ -55,7 +60,12 @@ class _HoverableButtonState extends State<HoverableButton> {
                   ]
                 : [
                     BoxShadow(
-                      color: const Color.fromARGB(255, 0, 0, 0).withOpacity(0.1),
+                      color: const Color.fromARGB(
+                        255,
+                        0,
+                        0,
+                        0,
+                      ).withOpacity(0.1),
                       blurRadius: 4,
                       spreadRadius: 1,
                       offset: const Offset(0, 2),
@@ -99,7 +109,7 @@ class SocialPage extends StatelessWidget {
           height: double.infinity,
           decoration: const BoxDecoration(
             image: DecorationImage(
-              image: AssetImage('assets/img/bg.page.jpg'),
+              image: AssetImage('assets/img/social.page.jpg'),
               fit: BoxFit.cover,
             ),
           ),
@@ -109,19 +119,18 @@ class SocialPage extends StatelessWidget {
               const Spacer(flex: 3),
 
               HoverableButton(
-                label: 'Easy',
+                label: '"The First Light of Turmoil"',
                 color: const Color.fromARGB(255, 48, 12, 1).withOpacity(0.9),
-                hoverColor: const Color.fromARGB(255, 129, 221, 25),
+                hoverColor: const Color.fromARGB(255, 221, 152, 25),
                 onTap: () {
                   Navigator.pushNamed(context, '/quiz_social_easy');
                 },
               ),
 
               HoverableButton(
-                label: 'Hard',
+                label: '"Awakening in Chaos"',
                 color: const Color.fromARGB(255, 48, 12, 1).withOpacity(0.9),
-                hoverColor:
-                    const Color.fromARGB(255, 255, 0, 0).withOpacity(0.9),
+                hoverColor: const Color.fromARGB(255, 226, 0, 0).withOpacity(0.9),
                 onTap: () {
                   Navigator.pushNamed(context, '/quiz_social_hard');
                 },
@@ -135,7 +144,7 @@ class SocialPage extends StatelessWidget {
                   icon: const Icon(
                     Icons.home,
                     size: 50,
-                    color: Color.fromARGB(255, 48, 12, 1),
+                    color: Color.fromARGB(255, 231, 224, 167),
                   ),
                   onPressed: () => Navigator.pop(context),
                 ),

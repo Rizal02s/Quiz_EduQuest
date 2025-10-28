@@ -308,66 +308,69 @@ class _QuizSocialEasyPageState extends State<QuizSocialEasyPage> {
   }
 
   Widget _buildQuestionCard(
-    Map<String, dynamic> q,
-    List<String> answers, {
-    Key? key,
-  }) {
-    return Container(
-      key: key,
-      margin: const EdgeInsets.symmetric(horizontal: 24),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
-            decoration: BoxDecoration(
-              color: const Color.fromARGB(255, 255, 255, 255).withOpacity(0.92),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Text(
-              q['question'],
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                fontFamily: 'Poppins',
-              ),
-            ),
+  Map<String, dynamic> q,
+  List<String> answers, {
+  Key? key,
+}) {
+  return Container(
+    key: key,
+    margin: const EdgeInsets.symmetric(horizontal: 24),
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+          decoration: BoxDecoration(
+            color: const Color.fromARGB(255, 255, 255, 255).withOpacity(0.92),
+            borderRadius: BorderRadius.circular(12),
           ),
-          const SizedBox(height: 12),
-          ...answers.map((ans) {
-            final isSelected = selectedAnswer == ans;
-            return Container(
-              margin: const EdgeInsets.symmetric(vertical: 6),
-              width: 320,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: isSelected
-                      ? Colors.lightBlueAccent
-                      : Colors.white,
-                  foregroundColor: isSelected ? Colors.white : Colors.black,
-                  shape: const StadiumBorder(),
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                ),
-                // DISABLE pilihan jawaban saat start overlay aktif
-                onPressed: showResultOverlay || showStartOverlay
-                    ? null
-                    : () => setState(() => selectedAnswer = ans),
-                child: Text(
-                  ans,
-                  style: const TextStyle(
-                    fontFamily: 'Poppins',
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
-                ),
+          child: Text(
+            q['question'],
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              fontFamily: 'Poppins',
+            ),
+            softWrap: true, // agar teks membungkus
+          ),
+        ),
+        const SizedBox(height: 12),
+        ...answers.map((ans) {
+          final isSelected = selectedAnswer == ans;
+          return Container(
+            margin: const EdgeInsets.symmetric(vertical: 6),
+            // Buat lebar bisa menyesuaikan dengan device dan isi
+            constraints: const BoxConstraints(
+              minWidth: double.infinity,
+            ),
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: isSelected ? Colors.lightBlueAccent : Colors.white,
+                foregroundColor: isSelected ? Colors.white : Colors.black,
+                shape: const StadiumBorder(),
+                padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
               ),
-            );
-          }),
-        ],
-      ),
-    );
-  }
+              onPressed: showResultOverlay || showStartOverlay
+                  ? null
+                  : () => setState(() => selectedAnswer = ans),
+              child: Text(
+                ans,
+                style: const TextStyle(
+                  fontFamily: 'Poppins',
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+                softWrap: true, // agar teks membungkus jika panjang
+              ),
+            ),
+          );
+        }),
+      ],
+    ),
+  );
+}
+
 
   // ===== START OVERLAY WIDGET (DITAMBAHKAN) =====
   Widget _buildStartOverlay() {

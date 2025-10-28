@@ -1,136 +1,107 @@
-//SOAL SOCIAL EASY
+//SOAL SOCIAL HARD
 
 final List<Map<String, dynamic>> questions = [
   {
-    'question': 'Hewan yang mengalami metamorfosis sempurna adalah..',
-    'answers': ['Kucing', 'Ayam', 'Kupu-kupu', 'Ikan'],
-    'correct': 'Kupu-kupu',
-  },
-  {
-    'question': 'Pemimpin partai PKI adalah …',
-    'answers': ['D.N. Aidit', 'Musso', 'Vladimir Bahlil', 'Semaun'],
-    'correct': 'Semaun',
-  },
-  {
     'question':
-        'Kumpulan bintang yang jumlahnya bermiliar-miliar merupakan pengertian singkat dari …',
-    'answers': ['Tata Surya', 'Planetoid', 'Asteroid', 'Galaksi'],
-    'correct': 'Galaksi',
+        'Sistem politik ekonomi berupa proteksi dan politik kolonial untuk mencapai neraca keuntungan tinggi merupakan pengertian dari..',
+    'answers': ['Liberalisme', 'Merkantilisme', 'Sosialisme', 'Kapitalisme'],
+    'correct': 'Merkantilisme',
   },
   {
-    'question': 'Lapisan atmosfer terbawah adalah …',
-    'answers': ['Troposfer', 'Mesosfer', 'Termosfer', 'Stratosfer'],
-    'correct': 'Troposfer',
-  },
-  {
-    'question': 'Penghasil kopi terbesar di dunia adalah …',
-    'answers': ['Brazil', 'Argentina', 'Chile', 'Colombia'],
-    'correct': 'Brazil',
-  },
-  {
-    'question': 'Sumber energi terbesar bagi kehidupan di Bumi adalah..',
-    'answers': ['Matahari', 'Oksigen', 'Air', 'Batu bara'],
-    'correct': 'Matahari',
-  },
-  {
-    'question': 'Kerajaan Tarumanegara dipimpin oleh …',
-    'answers': ['Dedi Mulyadi', 'Mulawarman', 'Purnawarman', 'Sima'],
-    'correct': 'Purnawarman',
-  },
-  {
-    'question': 'Sultan Malik Al-Saleh pernah memimpin kerajaan …',
-    'answers': ['Samudra Pasai', 'Darul Islam/TII', 'Kerajaan Aceh', 'Malaka'],
-    'correct': 'Samudra Pasai',
-  },
-  {
-    'question':
-        'Partikel subatomik manakah yang bertanggung jawab atas ikatan kimia?',
-    'answers': ['Neutron', 'Proton', 'Elektron', 'Positron'],
-    'correct': 'Elektron',
-  },
-  {
-    'question':
-        'Kerajaan yang berhasil menaklukkan Kota Konstantinopel pada tahun 1453 M adalah …',
-    'answers': ['Romawi', 'Kerajaan Inggris', 'Ottoman', 'Kerajaan Mughal'],
-    'correct': 'Ottoman',
-  },
-  {
-    'question': 'Penemu mesin uap adalah …',
-    'answers': ['Abraham Darby', 'James Watt', 'Morse', 'Elias Howe'],
-    'correct': 'James Watt',
-  },
-  {
-    'question':
-        'Perubahan cara produksi barang dari manusia ke mesin disebut juga …',
+    'question': 'Salah satu dampak merkantilisme dalam sejarah adalah...?',
     'answers': [
-      'Revolusi Perancis',
+      'Munculnya Kolonialisme dan imperialisme oleh negara Eropa',
+      'Menghilangkan sistem perdagangan',
+      'Menurunnya produksi barang manufaktur',
+      'Muncul ideologi baru',
+    ],
+    'correct': 'Munculnya Kolonialisme dan imperialisme oleh negara Eropa',
+  },
+  {
+    'question':
+        'Tokoh utama yang memulai gerakan Reformasi Gereja pada tahun 1517 adalah...',
+    'answers': [
+      'John Calvin',
+      'Martin Luther',
+      'Vladimir Lenin',
+      'Kaisar Wilhelm II',
+    ],
+    'correct': 'Martin Luther',
+  },
+  {
+    'question': 'Dampak dari Reformasi Gereja Adalah..',
+    'answers': [
+      'Lahirnya ajaran Protestan',
+      'Muncul ideologi Atheis',
+      'Terciptanya perang salib',
+      'Runtuhnya Konstantinopel',
+    ],
+    'correct': 'Lahirnya ajaran Protestan',
+  },
+  {
+    'question':
+        'Karena dominasi gereja yang sangat kuat pada abad ke 14-17, mendorong munculnya sebuah gerakan yang disebut ..',
+    'answers': [
+      'Pemberontakan',
+      'Eropa Springs',
       'Revolusi Industri',
       'Renaissance',
-      'Europe Springs',
+    ],
+    'correct': 'Renaissance',
+  },
+  {
+    'question':
+        'Leonardo da Vinci dan Michelangelo dengan karya ikoniknya dianggap sebagai simbol dari..',
+    'answers': [
+      'Kekuasaan gereja',
+      'Kebebasan berekspresi',
+      'Kehidupan Religius',
+      'Menentang Oligark',
+    ],
+    'correct': 'Kebebasan berekspresi',
+  },
+  {
+    'question':
+        'Setelah berkembangnya zaman, era kehidupan di Eropa memasuki babak baru, yaitu..',
+    'answers': [
+      'Perang Dunia 1',
+      'Pelayaran Columbus',
+      'Revolusi Industri',
+      'Perang Dingin',
     ],
     'correct': 'Revolusi Industri',
   },
   {
-    'question': 'Rangka manusia berfungsi untuk...',
+    'question':
+        'Salah satu faktor pendorong terjadinya Revolusi Industri Adalah..',
     'answers': [
-      'Bernafas',
-      'Melindungi organ dalam',
-      'Reproduksi',
-      'Mencerna makanan',
+      'Hasil kolonial dan imperialisme oleh bangsa Eropa',
+      'Ingin menginvasi negara Jerman',
+      'Persiapan Perang Dunia 1',
+      'Semua jawaban benar',
     ],
-    'correct': 'Melindungi organ dalam',
+    'correct': 'Hasil kolonial dan imperialisme oleh bangsa Eropa',
   },
   {
-    'question': 'Orang Belanda pertama yang tiba di Indonesia adalah …',
+    'question':
+        'Revolusi Industri merupakan awal masa keemasan Eropa, tetapi juga mengawali perpecahan Eropa yang disebabkan oleh negara..',
     'answers': [
-      'Pieter Both',
-      'Leonardo Bonapartae',
-      'Jack Sparrow',
-      'Cornelius de Houtman',
+      'Inggris, Perancis, Belanda',
+      'Inggris, Spanyol, Italia',
+      'Jerman, Italia, Russia',
+      'Jerman, Perancis, Inggris',
     ],
-    'correct': 'Cornelius de Houtman',
+    'correct': 'Jerman, Perancis, Inggris',
   },
   {
     'question':
-        'Daerah Indonesia yang saat ini masih menganut sistem monarki adalah …',
-    'answers': ['Aceh Darussalam', 'Bandung', 'DKI Jakarta', 'Yogyakarta'],
-    'correct': 'Yogyakarta',
-  },
-  {
-    'question': 'Penggagas utama Indische Partij adalah …',
+        'Alasan perpecahan Jerman, Inggris dan Perancis didasari oleh..',
     'answers': [
-      'Soekarno',
-      'Moh. Hatta',
-      'Danudirja Setyabudi',
-      'Ki Hajar Dewantara',
+      'Persaingan penemu nuklir',
+      'Pembagian wilayah jajahan Afrika',
+      'Invasi oleh Jerman ke negara Perancis',
+      'Inggris menghianati perjanjian',
     ],
-    'correct': 'Danudirja Setyabudi',
-  },
-  {
-    'question':
-        'Henk Sneevliet membawa kelompok Social Democratische Partij ke Indonesia dengan paham …',
-    'answers': ['Sosialis', 'Ide Marx-Lenin', 'Demokratik', 'Monarki'],
-    'correct': 'Ide Marx-Lenin',
-  },
-  {
-    'question':
-        'Planet yang dikenal sebagai "Planet Merah" dalam tata surya kita adalah..',
-    'answers': ['Mars', 'Jupiter', 'Venus', 'Saturnus'],
-    'correct': 'Mars',
-  },
-  {
-    'question': 'Berikut ini yang termasuk konduktor panas yang baik adalah..',
-    'answers': ['Emas', 'Karet', 'Plastik', 'Kayu'],
-    'correct': 'Emas',
-  },
-  {
-    'question':
-        'Blok Barat memiliki NATO, sebagai tandingan Uni Soviet membentuk …',
-    'answers': ['SEATO', 'AFC', 'Conmebol', 'Pakta Warsawa'],
-    'correct': 'Pakta Warsawa',
+    'correct': 'Pembagian wilayah jajahan Afrika',
   },
 ];
-
-
-//SOAL SOCIAL HARD
-
