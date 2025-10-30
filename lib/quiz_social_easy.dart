@@ -24,12 +24,11 @@ class _QuizSocialEasyPageState extends State<QuizSocialEasyPage> {
   int timeLeft = 20;
   Timer? timer;
 
-  // === START COUNTDOWN (DITAMBAHKAN) ===
+  // === START COUNTDOWN ===
   int startCountdown = 5;
   Timer? startCountdownTimer;
   bool showStartOverlay = true;
 
-  // fungsi untuk memulai hitung mundur start (5..1) lalu memulai quiz
   void startStartCountdown() {
     startCountdownTimer?.cancel();
     startCountdown = 5;
@@ -44,13 +43,12 @@ class _QuizSocialEasyPageState extends State<QuizSocialEasyPage> {
           setState(() {
             showStartOverlay = false;
           });
-          startTimer(); // mulai timer quiz setelah countdown selesai
+          startTimer();
         }
       });
     });
   }
 
-  // ===== quiz timer functions =====
   void startTimer() {
     timer?.cancel();
     timeLeft = 20;
@@ -92,7 +90,7 @@ class _QuizSocialEasyPageState extends State<QuizSocialEasyPage> {
                 selectedAnswer = null;
                 showResultOverlay = false;
               });
-              startStartCountdown(); // restart countdown saat mulai ulang quiz
+              startStartCountdown();
             },
             child: const Text('Try Again'),
           ),
@@ -104,7 +102,7 @@ class _QuizSocialEasyPageState extends State<QuizSocialEasyPage> {
   @override
   void initState() {
     super.initState();
-    startStartCountdown(); // panggil countdown sebelum quiz dimulai
+    startStartCountdown();
   }
 
   @override
@@ -131,57 +129,264 @@ class _QuizSocialEasyPageState extends State<QuizSocialEasyPage> {
     setState(() {
       lastAnswerCorrect = isCorrect;
       showResultOverlay = true;
-      if (isCorrect)
-        score += 20;
-      else {
-        lives = lives - 1;
-        if (lives < 0) lives = 0;
-      }
     });
 
-    Future.delayed(resultDuration, () {
-      if (isCorrect) {
-        if (currentQuestion >= questions.length - 1) {
-          stopTimer();
-          setState(() => showResultOverlay = false);
-          showDialog(
-            context: context,
-            barrierDismissible: false,
-            builder: (_) => AlertDialog(
-              title: const Text('🏁 Quiz Selesai!'),
-              content: Text('Skor akhir kamu: $score'),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                    Navigator.of(context).pop();
-                  },
-                  child: const Text('Back to Home'),
+    if (isCorrect) {
+      stopTimer();
+      // Popup penjelasan jawaban benar
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) => Dialog(
+          backgroundColor: Colors.transparent,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(22),
+          ),
+          child: Container(
+            width: 400,
+            padding: const EdgeInsets.all(28),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(22),
+              color: const Color(0xFFF9ECD4),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.12),
+                  blurRadius: 16,
+                  offset: const Offset(0, 6),
                 ),
               ],
             ),
-          );
-        } else {
-          setState(() {
-            currentQuestion++;
-            selectedAnswer = null;
-            showResultOverlay = false;
-          });
-          startTimer();
-        }
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Jawaban Benar!',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.brown,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  questions[currentQuestion]['explanation'] ??
+                      'Penjelasan tidak tersedia',
+                  style: const TextStyle(
+                    fontSize: 16,
+                    color: Colors.black87,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      setState(() {
+                        showResultOverlay = false;
+                        selectedAnswer = null;
+                        score += 20;
+                        if (currentQuestion < questions.length - 1) {
+                          currentQuestion++;
+                          startTimer();
+                        } else {
+                          // ==== Jika soal terakhir, munculkan dialog rangkuman ====
+                          showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (_) => Dialog(
+                              backgroundColor: Colors.transparent,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(22),
+                              ),
+                              child: Container(
+                                width: 400,
+                                padding: const EdgeInsets.all(28),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(22),
+                                  color: const Color(0xFFEDE6D6),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.12),
+                                      blurRadius: 16,
+                                      offset: const Offset(0, 6),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const Text(
+                                      'Kesimpulan Quiz',
+                                      style: TextStyle(
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.brown,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    const SizedBox(height: 16),
+                                    Text(
+                                      'Selamat! Kamu telah menyelesaikan seluruh ${questions.length} soal.\n'
+                                      'Skormu: $score\n'
+                                      'Rangkuman: Topik utama meliputi sejarah, geografi, sosial, dan penjelasan penting tiap soal. Terus belajar dan tingkatkan pemahamanmu!',
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.black87,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    const SizedBox(height: 30),
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        Navigator.of(
+                                          context,
+                                        ).popUntil((route) => route.isFirst);
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.brown[300],
+                                        foregroundColor: Colors.white,
+                                        shape: const StadiumBorder(),
+                                        padding: const EdgeInsets.symmetric(
+                                          vertical: 14,
+                                          horizontal: 32,
+                                        ),
+                                      ),
+                                      child: const Text(
+                                        'Home',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        }
+                      });
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.brown[300],
+                      foregroundColor: Colors.white,
+                      shape: const StadiumBorder(),
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 14,
+                        horizontal: 28,
+                      ),
+                    ),
+                    child: const Text(
+                      'Next',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    } else {
+      setState(() {
+        lives = lives - 1;
+        if (lives < 0) lives = 0;
+        showResultOverlay = false;
+        selectedAnswer = null;
+      });
+
+      // Tampilkan dialog untuk jawaban salah
+      if (lives > 0) {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (_) => Dialog(
+            backgroundColor: Colors.transparent,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(22),
+            ),
+            child: Container(
+              width: 400,
+              padding: const EdgeInsets.all(28),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(22),
+                color: const Color(0xFFF9ECD4),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.12),
+                    blurRadius: 16,
+                    offset: const Offset(0, 6),
+                  ),
+                ],
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Jawaban Salah!',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.red,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    'Jawaban yang benar: ${questions[currentQuestion]['correct']}',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      color: Colors.black87,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    questions[currentQuestion]['explanation'] ??
+                        'Penjelasan tidak tersedia',
+                    style: const TextStyle(fontSize: 14, color: Colors.black87),
+                  ),
+                  const SizedBox(height: 24),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                        startTimer();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red[300],
+                        foregroundColor: Colors.white,
+                        shape: const StadiumBorder(),
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 14,
+                          horizontal: 28,
+                        ),
+                      ),
+                      child: const Text(
+                        'Lanjut',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
       } else {
-        if (lives <= 0) {
-          stopTimer();
-          _showGameOverDialog();
-        } else {
-          setState(() {
-            showResultOverlay = false;
-            selectedAnswer = null;
-          });
-          startTimer(); // restart timer untuk soal yang sama
-        }
+        _showGameOverDialog();
       }
-    });
+    }
   }
 
   Widget _buildLivesRow() {
@@ -211,7 +416,9 @@ class _QuizSocialEasyPageState extends State<QuizSocialEasyPage> {
         height: double.infinity,
         decoration: const BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('assets/img/social.easy.jpg'),
+            image: AssetImage(
+              'assets/img/social.easy.jpg',
+            ), // ✅ Perbaiki nama file
             fit: BoxFit.cover,
           ),
         ),
@@ -260,7 +467,6 @@ class _QuizSocialEasyPageState extends State<QuizSocialEasyPage> {
                   SizedBox(
                     width: 200,
                     child: ElevatedButton(
-                      // DISABLE tombol Check saat overlay start masih aktif
                       onPressed:
                           selectedAnswer == null ||
                               showResultOverlay ||
@@ -295,10 +501,7 @@ class _QuizSocialEasyPageState extends State<QuizSocialEasyPage> {
                 ],
               ),
 
-              // overlay hasil
-              if (showResultOverlay) _buildResultOverlay(),
-
-              // === overlay start countdown (DITAMBAHKAN) ===
+              // === overlay start countdown ===
               if (showStartOverlay) _buildStartOverlay(),
             ],
           ),
@@ -308,71 +511,74 @@ class _QuizSocialEasyPageState extends State<QuizSocialEasyPage> {
   }
 
   Widget _buildQuestionCard(
-  Map<String, dynamic> q,
-  List<String> answers, {
-  Key? key,
-}) {
-  return Container(
-    key: key,
-    margin: const EdgeInsets.symmetric(horizontal: 24),
-    child: Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
-          padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
-          decoration: BoxDecoration(
-            color: const Color.fromARGB(255, 255, 255, 255).withOpacity(0.92),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Text(
-            q['question'],
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              fontFamily: 'Poppins',
+    Map<String, dynamic> q,
+    List<String> answers, {
+    Key? key,
+  }) {
+    return Container(
+      key: key,
+      margin: const EdgeInsets.symmetric(horizontal: 24),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+            decoration: BoxDecoration(
+              color: const Color.fromARGB(255, 255, 255, 255).withOpacity(0.92),
+              borderRadius: BorderRadius.circular(12),
             ),
-            softWrap: true, // agar teks membungkus
-          ),
-        ),
-        const SizedBox(height: 12),
-        ...answers.map((ans) {
-          final isSelected = selectedAnswer == ans;
-          return Container(
-            margin: const EdgeInsets.symmetric(vertical: 6),
-            // Buat lebar bisa menyesuaikan dengan device dan isi
-            constraints: const BoxConstraints(
-              minWidth: double.infinity,
-            ),
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: isSelected ? Colors.lightBlueAccent : Colors.white,
-                foregroundColor: isSelected ? Colors.white : Colors.black,
-                shape: const StadiumBorder(),
-                padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+            child: Text(
+              q['question'],
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'Poppins',
               ),
-              onPressed: showResultOverlay || showStartOverlay
-                  ? null
-                  : () => setState(() => selectedAnswer = ans),
-              child: Text(
-                ans,
-                style: const TextStyle(
-                  fontFamily: 'Poppins',
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
+              softWrap: true,
+            ),
+          ),
+          const SizedBox(height: 12),
+          ...answers.map((ans) {
+            final isSelected = selectedAnswer == ans;
+            return Container(
+              margin: const EdgeInsets.symmetric(vertical: 6),
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: isSelected
+                      ? Colors.lightBlueAccent
+                      : Colors.white,
+                  foregroundColor: isSelected ? Colors.white : Colors.black,
+                  shape: const StadiumBorder(),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 14,
+                    horizontal: 16,
+                  ),
+                  minimumSize: const Size(
+                    double.infinity,
+                    50,
+                  ), // ✅ Tambahkan minimumSize
                 ),
-                softWrap: true, // agar teks membungkus jika panjang
+                onPressed: showResultOverlay || showStartOverlay
+                    ? null
+                    : () => setState(() => selectedAnswer = ans),
+                child: Text(
+                  ans,
+                  style: const TextStyle(
+                    fontFamily: 'Poppins',
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                  softWrap: true,
+                ),
               ),
-            ),
-          );
-        }),
-      ],
-    ),
-  );
-}
+            );
+          }),
+        ],
+      ),
+    );
+  }
 
-
-  // ===== START OVERLAY WIDGET (DITAMBAHKAN) =====
   Widget _buildStartOverlay() {
     return Positioned.fill(
       child: Container(
@@ -430,65 +636,6 @@ class _QuizSocialEasyPageState extends State<QuizSocialEasyPage> {
                     ),
                   ],
                 ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildResultOverlay() {
-    return Positioned(
-      top: MediaQuery.of(context).size.height * 0.38,
-      child: AnimatedOpacity(
-        opacity: showResultOverlay ? 1.0 : 0.0,
-        duration: const Duration(milliseconds: 250),
-        child: AnimatedScale(
-          scale: showResultOverlay ? 1.0 : 0.6,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOutBack,
-          child: Material(
-            elevation: 6,
-            borderRadius: BorderRadius.circular(16),
-            child: Container(
-              width: MediaQuery.of(context).size.width * 0.6,
-              padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: lastAnswerCorrect
-                          ? Colors.green[50]
-                          : Colors.red[50],
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      lastAnswerCorrect ? Icons.check_circle : Icons.cancel,
-                      color: lastAnswerCorrect ? Colors.green : Colors.red,
-                      size: 32,
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Text(
-                      lastAnswerCorrect
-                          ? 'Jawaban benar! +20 poin'
-                          : 'Jawaban salah! -5 poin',
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'Poppins',
-                      ),
-                    ),
-                  ),
-                ],
               ),
             ),
           ),
