@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'social_hard.dart'; // ✅ import soal dari file terpisah
+import 'social_hard.dart'; // ✅ Import soal hard (tetap)
 
 class QuizSocialHardPage extends StatefulWidget {
   const QuizSocialHardPage({Key? key}) : super(key: key);
@@ -20,43 +20,36 @@ class _QuizSocialHardPageState extends State<QuizSocialHardPage> {
 
   final Duration resultDuration = const Duration(milliseconds: 900);
 
-  // ===== timer quiz (sudah ada) =====
+  // ===== timer quiz =====
   int timeLeft = 20;
   Timer? timer;
 
-  // === START COUNTDOWN (DITAMBAHKAN) ===
-  // overlay countdown sebelum quiz dimulai
-  int startCountdown = 5; // hitung mundur awal (detik)
-  Timer? startCountdownTimer; // timer untuk hitung mundur start
-  bool showStartOverlay =
-      true; // overlay start akan tampil saat masuk halaman (blok interaksi) <-- ADDED
+  // === START COUNTDOWN ===
+  int startCountdown = 5;
+  Timer? startCountdownTimer;
+  bool showStartOverlay = true;
 
-  // fungsi untuk memulai hitung mundur start (5..1) lalu memulai quiz
   void startStartCountdown() {
-    // pastikan membatalkan jika ada sisa timer
     startCountdownTimer?.cancel();
-    startCountdown = 5; // reset ke 5 detik setiap kali dipanggil
+    startCountdown = 5;
     setState(() {
-      showStartOverlay = true; // tampilkan overlay start
+      showStartOverlay = true;
     });
     startCountdownTimer = Timer.periodic(const Duration(seconds: 1), (t) {
       setState(() {
         startCountdown--;
         if (startCountdown <= 0) {
-          // ketika countdown selesai, hilangkan overlay dan mulai timer quiz
           t.cancel();
           setState(() {
             showStartOverlay = false;
           });
-          startTimer(); // mulai timer quiz setelah countdown selesai <-- ADDED
+          startTimer();
         }
       });
     });
   }
 
-  // ===== quiz timer functions (sudah ada) =====
   void startTimer() {
-    // pastikan membatalkan timer lama kalau ada
     timer?.cancel();
     timeLeft = 20;
     timer = Timer.periodic(const Duration(seconds: 1), (t) {
@@ -97,8 +90,7 @@ class _QuizSocialHardPageState extends State<QuizSocialHardPage> {
                 selectedAnswer = null;
                 showResultOverlay = false;
               });
-              // restart start countdown agar user melihat peringatan lagi saat mulai ulang
-              startStartCountdown(); // <-- ADDED: restart countdown saat mulai ulang quiz
+              startStartCountdown();
             },
             child: const Text('Try Again'),
           ),
@@ -110,25 +102,26 @@ class _QuizSocialHardPageState extends State<QuizSocialHardPage> {
   @override
   void initState() {
     super.initState();
-    // Jangan langsung startTimer() --- gunakan startStartCountdown sehingga
-    // quiz timer hanya berjalan setelah countdown start selesai.
-    startStartCountdown(); // <-- ADDED: panggil countdown sebelum quiz dimulai
+    startStartCountdown();
   }
 
   @override
   void dispose() {
-    // batalkan kedua timer agar tidak leak
     timer?.cancel();
-    startCountdownTimer?.cancel(); // <-- ADDED: cancel start countdown timer
+    startCountdownTimer?.cancel();
     super.dispose();
   }
 
-  // ✅ Soal diambil dari soal_hard.dart
+  // 🔽==================================================================🔽
+  // 📍 PERUBAHAN UTAMA: Fungsi onCheckPressed disamakan dengan Kode 1
+  // 🔽==================================================================🔽
+
   void onCheckPressed() {
     if (selectedAnswer == null) {
-      // REMOVED: SnackBar ditampilkan di sini sebelumnya.
-      // Sesuai permintaan, kita HAPUS pemanggilan SnackBar supaya tidak muncul.
-      // Cukup return agar fungsi berhenti jika belum memilih jawaban.
+      // ✅ SnackBar (dari Kode 1) dikembalikan
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Pilih jawaban terlebih dahulu')),
+      );
       return;
     }
 
@@ -140,59 +133,271 @@ class _QuizSocialHardPageState extends State<QuizSocialHardPage> {
 
     setState(() {
       lastAnswerCorrect = isCorrect;
-      showResultOverlay = true;
-      if (isCorrect)
-        score += 20;
-      else {
-        lives = lives - 1;
-        if (lives < 0) lives = 0;
-      }
+      showResultOverlay = true; // Variabel ini ada di Kode 1
     });
 
-    Future.delayed(resultDuration, () {
-      if (isCorrect) {
-        if (currentQuestion >= questions.length - 1) {
-          stopTimer();
-          setState(() => showResultOverlay = false);
-          showDialog(
-            context: context,
-            barrierDismissible: false,
-            builder: (_) => AlertDialog(
-              title: const Text('🏁 Quiz Selesai!'),
-              content: Text('Skor akhir kamu: $score'),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                    Navigator.of(context).pop();
-                  },
-                  child: const Text('Back to Home'),
+    if (isCorrect) {
+      stopTimer();
+      // ✅ Popup penjelasan jawaban benar (dari Kode 1)
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) => Dialog(
+          backgroundColor: Colors.transparent,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(22),
+          ),
+          child: Container(
+            width: 400,
+            padding: const EdgeInsets.all(28),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(22),
+              color: const Color(0xFFF9ECD4), // Style dari Kode 1
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.12),
+                  blurRadius: 16,
+                  offset: const Offset(0, 6),
                 ),
               ],
             ),
-          );
-        } else {
-          setState(() {
-            currentQuestion++;
-            selectedAnswer = null;
-            showResultOverlay = false;
-          });
-          // restart timer untuk soal berikutnya (jika sudah lewat start countdown)
-          startTimer();
-        }
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Jawaban Benar!', // Style dari Kode 1
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.brown,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  questions[currentQuestion]['explanation'] ??
+                      'Penjelasan tidak tersedia', // Menampilkan penjelasan
+                  style: const TextStyle(
+                    fontSize: 16,
+                    color: Colors.black87,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      setState(() {
+                        showResultOverlay = false;
+                        selectedAnswer = null;
+                        score += 20; // ✅ Penambahan skor di sini (dari Kode 1)
+                        if (currentQuestion < questions.length - 1) {
+                          currentQuestion++;
+                          startTimer();
+                        } else {
+                          // ✅ Dialog Rangkuman (dari Kode 1)
+                          showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (_) => Dialog(
+                              backgroundColor: Colors.transparent,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(22),
+                              ),
+                              child: Container(
+                                width: 400,
+                                padding: const EdgeInsets.all(28),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(22),
+                                  color: const Color(0xFFEDE6D6), // Style dari Kode 1
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.12),
+                                      blurRadius: 16,
+                                      offset: const Offset(0, 6),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const Text(
+                                      'Kesimpulan Quiz', // Style dari Kode 1
+                                      style: TextStyle(
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.brown,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    const SizedBox(height: 16),
+                                    Text(
+                                      'Selamat! Kamu telah menyelesaikan seluruh ${questions.length} soal.\n'
+                                      'Skormu: $score\n'
+                                      'Rangkuman: Topik utama meliputi sejarah, geografi, sosial, dan penjelasan penting tiap soal. Terus belajar dan tingkatkan pemahamanmu!',
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.black87,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    const SizedBox(height: 30),
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        Navigator.of(
+                                          context,
+                                        ).popUntil((route) => route.isFirst); // Kembali ke Home
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.brown[300],
+                                        foregroundColor: Colors.white,
+                                        shape: const StadiumBorder(),
+                                        padding: const EdgeInsets.symmetric(
+                                          vertical: 14,
+                                          horizontal: 32,
+                                        ),
+                                      ),
+                                      child: const Text(
+                                        'Home',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        }
+                      });
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.brown[300],
+                      foregroundColor: Colors.white,
+                      shape: const StadiumBorder(),
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 14,
+                        horizontal: 28,
+                      ),
+                    ),
+                    child: const Text(
+                      'Next', // Style dari Kode 1
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    } else {
+      // ✅ Logika Jawaban Salah (dari Kode 1)
+      setState(() {
+        lives = lives - 1;
+        if (lives < 0) lives = 0;
+        showResultOverlay = false;
+        selectedAnswer = null;
+      });
+
+      // ✅ Tampilkan dialog untuk jawaban salah (dari Kode 1)
+      if (lives > 0) {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (_) => Dialog(
+            backgroundColor: Colors.transparent,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(22),
+            ),
+            child: Container(
+              width: 400,
+              padding: const EdgeInsets.all(28),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(22),
+                color: const Color(0xFFF9ECD4), // Style dari Kode 1
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.12),
+                    blurRadius: 16,
+                    offset: const Offset(0, 6),
+                  ),
+                ],
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Jawaban Salah!', // Style dari Kode 1
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.red,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    'Jawaban yang benar: ${questions[currentQuestion]['correct']}',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      color: Colors.black87,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    questions[currentQuestion]['explanation'] ??
+                        'Penjelasan tidak tersedia',
+                    style: const TextStyle(fontSize: 14, color: Colors.black87),
+                  ),
+                  const SizedBox(height: 24),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                        startTimer(); // Logika dari Kode 1
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red[300],
+                        foregroundColor: Colors.white,
+                        shape: const StadiumBorder(),
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 14,
+                          horizontal: 28,
+                        ),
+                      ),
+                      child: const Text(
+                        'Lanjut', // Style dari Kode 1
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
       } else {
-        if (lives <= 0) {
-          stopTimer();
-          _showGameOverDialog();
-        } else {
-          setState(() {
-            showResultOverlay = false;
-            selectedAnswer = null;
-          });
-        }
+        _showGameOverDialog();
       }
-    });
+    }
   }
+
+  // 🔼==================================================================🔼
+  // 📍 AKHIR DARI PERUBAHAN
+  // 🔼==================================================================🔼
 
   Widget _buildLivesRow() {
     return Row(
@@ -221,7 +426,7 @@ class _QuizSocialHardPageState extends State<QuizSocialHardPage> {
         height: double.infinity,
         decoration: const BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('assets/img/social.hard.jpg'),
+            image: AssetImage('assets/img/social.hard.jpg'), // Tetap Hard
             fit: BoxFit.cover,
           ),
         ),
@@ -270,17 +475,16 @@ class _QuizSocialHardPageState extends State<QuizSocialHardPage> {
                   SizedBox(
                     width: 200,
                     child: ElevatedButton(
-                      // DISABLE tombol Check saat overlay start masih aktif agar user
-                      // tidak bisa maju sebelum quiz benar-benar dimulai. <-- ADDED
                       onPressed:
                           selectedAnswer == null ||
-                              showResultOverlay ||
-                              showStartOverlay // <-- ADDED: blok saat start countdown
-                          ? null
-                          : onCheckPressed,
+                                  showResultOverlay ||
+                                  showStartOverlay
+                              ? null
+                              : onCheckPressed,
                       style: ElevatedButton.styleFrom(
+                        // ✅ Style Tombol Check disamakan dengan Kode 1
                         backgroundColor: selectedAnswer == null
-                            ? Colors.grey
+                            ? const Color.fromARGB(255, 237, 248, 203)
                             : Colors.greenAccent,
                         foregroundColor: Colors.black,
                         shape: const StadiumBorder(),
@@ -306,11 +510,11 @@ class _QuizSocialHardPageState extends State<QuizSocialHardPage> {
                 ],
               ),
 
-              // overlay hasil (muncul ketika showResultOverlay == true)
-              if (showResultOverlay) _buildResultOverlay(),
+              // ❌ _buildResultOverlay() (overlay sementara) DIHAPUS DARI SINI
+              // if (showResultOverlay) _buildResultOverlay(), <-- Dihapus
 
-              // === overlay start countdown (DITAMBAHKAN) ===
-              if (showStartOverlay) _buildStartOverlay(), // <-- ADDED
+              // === overlay start countdown ===
+              if (showStartOverlay) _buildStartOverlay(),
             ],
           ),
         ),
@@ -343,6 +547,7 @@ class _QuizSocialHardPageState extends State<QuizSocialHardPage> {
                 fontWeight: FontWeight.bold,
                 fontFamily: 'Poppins',
               ),
+              softWrap: true, // ✅ Ditambahkan dari Kode 1
             ),
           ),
           const SizedBox(height: 12),
@@ -350,7 +555,7 @@ class _QuizSocialHardPageState extends State<QuizSocialHardPage> {
             final isSelected = selectedAnswer == ans;
             return Container(
               margin: const EdgeInsets.symmetric(vertical: 6),
-              width: 320,
+              // ❌ width: 320, (dihapus agar sama dengan Kode 1)
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: isSelected
@@ -358,9 +563,15 @@ class _QuizSocialHardPageState extends State<QuizSocialHardPage> {
                       : Colors.white,
                   foregroundColor: isSelected ? Colors.white : Colors.black,
                   shape: const StadiumBorder(),
-                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 14,
+                    horizontal: 16, // ✅ Padding disamakan dengan Kode 1
+                  ),
+                  minimumSize: const Size(
+                    double.infinity,
+                    50,
+                  ), // ✅ minimumSize dari Kode 1
                 ),
-                // DISABLE pilihan jawaban saat start overlay aktif <-- ADDED
                 onPressed: showResultOverlay || showStartOverlay
                     ? null
                     : () => setState(() => selectedAnswer = ans),
@@ -371,6 +582,7 @@ class _QuizSocialHardPageState extends State<QuizSocialHardPage> {
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
                   ),
+                  softWrap: true, // ✅ softWrap dari Kode 1
                 ),
               ),
             );
@@ -380,11 +592,11 @@ class _QuizSocialHardPageState extends State<QuizSocialHardPage> {
     );
   }
 
-  // ===== START OVERLAY WIDGET (DITAMBAHKAN) =====
+  // ===== START OVERLAY WIDGET (Tetap ada, sama seperti Kode 1) =====
   Widget _buildStartOverlay() {
     return Positioned.fill(
       child: Container(
-        color: Colors.black.withOpacity(0.45), // dim background
+        color: Colors.black.withOpacity(0.45),
         child: Center(
           child: AnimatedOpacity(
             opacity: showStartOverlay ? 1.0 : 0.0,
@@ -446,62 +658,5 @@ class _QuizSocialHardPageState extends State<QuizSocialHardPage> {
     );
   }
 
-  Widget _buildResultOverlay() {
-    return Positioned(
-      top: MediaQuery.of(context).size.height * 0.38,
-      child: AnimatedOpacity(
-        opacity: showResultOverlay ? 1.0 : 0.0,
-        duration: const Duration(milliseconds: 250),
-        child: AnimatedScale(
-          scale: showResultOverlay ? 1.0 : 0.6,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOutBack,
-          child: Material(
-            elevation: 6,
-            borderRadius: BorderRadius.circular(16),
-            child: Container(
-              width: MediaQuery.of(context).size.width * 0.6,
-              padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: lastAnswerCorrect
-                          ? Colors.green[50]
-                          : Colors.red[50],
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      lastAnswerCorrect ? Icons.check_circle : Icons.cancel,
-                      color: lastAnswerCorrect ? Colors.green : Colors.red,
-                      size: 32,
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Text(
-                      lastAnswerCorrect
-                          ? 'Jawaban benar! +20 poin'
-                          : 'Jawaban salah! -5 poin',
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'Poppins',
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
+  // ❌ FUNGSI _buildResultOverlay() DIHAPUS (karena Kode 1 tidak pakai)
 }
