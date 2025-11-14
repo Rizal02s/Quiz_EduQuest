@@ -112,6 +112,10 @@ class _QuizScienceEasyPageState extends State<QuizScienceEasyPage> {
     super.dispose();
   }
 
+  // 🔽==================================================================🔽
+  // 📍 PERUBAHAN UTAMA: Fungsi onCheckPressed disamakan dengan Kode 1
+  // 🔽==================================================================🔽
+
   void onCheckPressed() {
     if (selectedAnswer == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -130,58 +134,275 @@ class _QuizScienceEasyPageState extends State<QuizScienceEasyPage> {
     setState(() {
       lastAnswerCorrect = isCorrect;
       showResultOverlay = true;
-      if (isCorrect)
-        score += 20;
-      else {
-        lives = lives - 1;
-        if (lives < 0) lives = 0;
-      }
     });
 
-    Future.delayed(resultDuration, () {
-      if (isCorrect) {
-        if (currentQuestion >= questionsScienceEasy.length - 1) {
-          stopTimer();
-          setState(() => showResultOverlay = false);
-          showDialog(
-            context: context,
-            barrierDismissible: false,
-            builder: (_) => AlertDialog(
-              title: const Text('🏁 Quiz Selesai!'),
-              content: Text('Skor akhir kamu: $score'),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                    Navigator.of(context).pop();
-                  },
-                  child: const Text('Back to Home'),
+    if (isCorrect) {
+      stopTimer();
+      // ✅ Popup penjelasan jawaban benar (dari Kode 1)
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) => Dialog(
+          backgroundColor: Colors.transparent,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(22),
+          ),
+          child: Container(
+            width: 400,
+            padding: const EdgeInsets.all(28),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(22),
+              color: const Color(0xFFF9ECD4), // Style dari Kode 1
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.12),
+                  blurRadius: 16,
+                  offset: const Offset(0, 6),
                 ),
               ],
             ),
-          );
-        } else {
-          setState(() {
-            currentQuestion++;
-            selectedAnswer = null;
-            showResultOverlay = false;
-          });
-          startTimer();
-        }
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Jawaban Benar!', // Style dari Kode 1
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.brown,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  // ✅ GUNAKAN questionsScienceEasy
+                  questionsScienceEasy[currentQuestion]['explanation'] ??
+                      'Penjelasan tidak tersedia', // Menampilkan penjelasan
+                  style: const TextStyle(
+                    fontSize: 16,
+                    color: Colors.black87,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      setState(() {
+                        showResultOverlay = false;
+                        selectedAnswer = null;
+                        score += 20; // ✅ Penambahan skor di sini (dari Kode 1)
+                        // ✅ GUNAKAN questionsScienceEasy
+                        if (currentQuestion < questionsScienceEasy.length - 1) {
+                          currentQuestion++;
+                          startTimer();
+                        } else {
+                          // ✅ Dialog Rangkuman (dari Kode 1)
+                          showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (_) => Dialog(
+                              backgroundColor: Colors.transparent,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(22),
+                              ),
+                              child: Container(
+                                width: 400,
+                                padding: const EdgeInsets.all(28),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(22),
+                                  color: const Color(0xFFEDE6D6), // Style dari Kode 1
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.12),
+                                      blurRadius: 16,
+                                      offset: const Offset(0, 6),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const Text(
+                                      'Kesimpulan Quiz', // Style dari Kode 1
+                                      style: TextStyle(
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.brown,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    const SizedBox(height: 16),
+                                    Text(
+                                      // ✅ GUNAKAN questionsScienceEasy
+                                      'Selamat! Kamu telah menyelesaikan seluruh ${questionsScienceEasy.length} soal.\n'
+                                      'Skormu: $score\n'
+                                      'Rangkuman: Topik utama meliputi sejarah, geografi, sosial, dan penjelasan penting tiap soal. Terus belajar dan tingkatkan pemahamanmu!',
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.black87,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    const SizedBox(height: 30),
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        Navigator.of(
+                                          context,
+                                        ).popUntil((route) => route.isFirst); // Kembali ke Home
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.brown[300],
+                                        foregroundColor: Colors.white,
+                                        shape: const StadiumBorder(),
+                                        padding: const EdgeInsets.symmetric(
+                                          vertical: 14,
+                                          horizontal: 32,
+                                        ),
+                                      ),
+                                      child: const Text(
+                                        'Home',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        }
+                      });
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.brown[300],
+                      foregroundColor: Colors.white,
+                      shape: const StadiumBorder(),
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 14,
+                        horizontal: 28,
+                      ),
+                    ),
+                    child: const Text(
+                      'Next', // Style dari Kode 1
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    } else {
+      // ✅ Logika Jawaban Salah (dari Kode 1)
+      setState(() {
+        lives = lives - 1;
+        if (lives < 0) lives = 0;
+        showResultOverlay = false;
+        selectedAnswer = null;
+      });
+
+      // ✅ Tampilkan dialog untuk jawaban salah (dari Kode 1)
+      if (lives > 0) {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (_) => Dialog(
+            backgroundColor: Colors.transparent,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(22),
+            ),
+            child: Container(
+              width: 400,
+              padding: const EdgeInsets.all(28),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(22),
+                color: const Color(0xFFF9ECD4), // Style dari Kode 1
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.12),
+                    blurRadius: 16,
+                    offset: const Offset(0, 6),
+                  ),
+                ],
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Jawaban Salah!', // Style dari Kode 1
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.red,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    // ✅ GUNAKAN questionsScienceEasy
+                    'Jawaban yang benar: ${questionsScienceEasy[currentQuestion]['correct']}',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      color: Colors.black87,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    // ✅ GUNAKAN questionsScienceEasy
+                    questionsScienceEasy[currentQuestion]['explanation'] ??
+                        'Penjelasan tidak tersedia',
+                    style: const TextStyle(fontSize: 14, color: Colors.black87),
+                  ),
+                  const SizedBox(height: 24),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                        startTimer(); // Logika dari Kode 1
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red[300],
+                        foregroundColor: Colors.white,
+                        shape: const StadiumBorder(),
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 14,
+                          horizontal: 28,
+                        ),
+                      ),
+                      child: const Text(
+                        'Lanjut', // Style dari Kode 1
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
       } else {
-        if (lives <= 0) {
-          stopTimer();
-          _showGameOverDialog();
-        } else {
-          setState(() {
-            showResultOverlay = false;
-            selectedAnswer = null;
-          });
-          startTimer();
-        }
+        _showGameOverDialog();
       }
-    });
+    }
   }
+
+  // 🔼==================================================================🔼
+  // 📍 AKHIR DARI PERUBAHAN
+  // 🔼==================================================================🔼
 
   Widget _buildLivesRow() {
     return Row(
@@ -211,7 +432,7 @@ class _QuizScienceEasyPageState extends State<QuizScienceEasyPage> {
         height: double.infinity,
         decoration: const BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('assets/img/bg.nature.jpg'),
+            image: AssetImage('assets/img/bg.nature.jpg'), // Tetap bg.nature
             fit: BoxFit.cover,
           ),
         ),
@@ -223,6 +444,7 @@ class _QuizScienceEasyPageState extends State<QuizScienceEasyPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
+                    // ✅ GUNAKAN questionsScienceEasy
                     'Stage ${currentQuestion + 1} / ${questionsScienceEasy.length}',
                     style: const TextStyle(
                       color: Colors.white,
@@ -262,13 +484,14 @@ class _QuizScienceEasyPageState extends State<QuizScienceEasyPage> {
                     child: ElevatedButton(
                       onPressed:
                           selectedAnswer == null ||
-                              showResultOverlay ||
-                              showStartOverlay
-                          ? null
-                          : onCheckPressed,
+                                  showResultOverlay ||
+                                  showStartOverlay
+                              ? null
+                              : onCheckPressed,
                       style: ElevatedButton.styleFrom(
+                        // ✅ Style Tombol Check disamakan dengan Kode 1
                         backgroundColor: selectedAnswer == null
-                            ? Colors.grey
+                            ? const Color.fromARGB(255, 237, 248, 203)
                             : Colors.greenAccent,
                         foregroundColor: Colors.black,
                         shape: const StadiumBorder(),
@@ -294,7 +517,10 @@ class _QuizScienceEasyPageState extends State<QuizScienceEasyPage> {
                 ],
               ),
 
-              if (showResultOverlay) _buildResultOverlay(),
+              // ❌ _buildResultOverlay() (overlay sementara) DIHAPUS DARI SINI
+              // if (showResultOverlay) _buildResultOverlay(), <-- Dihapus
+
+              // === overlay start countdown ===
               if (showStartOverlay) _buildStartOverlay(),
             ],
           ),
@@ -328,6 +554,7 @@ class _QuizScienceEasyPageState extends State<QuizScienceEasyPage> {
                 fontWeight: FontWeight.bold,
                 fontFamily: 'Poppins',
               ),
+              softWrap: true, // ✅ Ditambahkan dari Kode 1
             ),
           ),
           const SizedBox(height: 12),
@@ -335,7 +562,7 @@ class _QuizScienceEasyPageState extends State<QuizScienceEasyPage> {
             final isSelected = selectedAnswer == ans;
             return Container(
               margin: const EdgeInsets.symmetric(vertical: 6),
-              width: 320,
+              // ❌ width: 320, (dihapus agar sama dengan Kode 1)
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: isSelected
@@ -343,7 +570,14 @@ class _QuizScienceEasyPageState extends State<QuizScienceEasyPage> {
                       : Colors.white,
                   foregroundColor: isSelected ? Colors.white : Colors.black,
                   shape: const StadiumBorder(),
-                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 14,
+                    horizontal: 16, // ✅ Padding disamakan dengan Kode 1
+                  ),
+                  minimumSize: const Size(
+                    double.infinity,
+                    50,
+                  ), // ✅ minimumSize dari Kode 1
                 ),
                 onPressed: showResultOverlay || showStartOverlay
                     ? null
@@ -355,6 +589,7 @@ class _QuizScienceEasyPageState extends State<QuizScienceEasyPage> {
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
                   ),
+                  softWrap: true, // ✅ softWrap dari Kode 1
                 ),
               ),
             );
@@ -364,6 +599,7 @@ class _QuizScienceEasyPageState extends State<QuizScienceEasyPage> {
     );
   }
 
+  // ===== START OVERLAY WIDGET (Tetap ada, sama seperti Kode 1) =====
   Widget _buildStartOverlay() {
     return Positioned.fill(
       child: Container(
@@ -421,65 +657,6 @@ class _QuizScienceEasyPageState extends State<QuizScienceEasyPage> {
                     ),
                   ],
                 ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildResultOverlay() {
-    return Positioned(
-      top: MediaQuery.of(context).size.height * 0.38,
-      child: AnimatedOpacity(
-        opacity: showResultOverlay ? 1.0 : 0.0,
-        duration: const Duration(milliseconds: 250),
-        child: AnimatedScale(
-          scale: showResultOverlay ? 1.0 : 0.6,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOutBack,
-          child: Material(
-            elevation: 6,
-            borderRadius: BorderRadius.circular(16),
-            child: Container(
-              width: MediaQuery.of(context).size.width * 0.6,
-              padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: lastAnswerCorrect
-                          ? Colors.green[50]
-                          : Colors.red[50],
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      lastAnswerCorrect ? Icons.check_circle : Icons.cancel,
-                      color: lastAnswerCorrect ? Colors.green : Colors.red,
-                      size: 32,
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Text(
-                      lastAnswerCorrect
-                          ? 'Jawaban benar! +20 poin'
-                          : 'Jawaban salah! -5 poin',
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'Poppins',
-                      ),
-                    ),
-                  ),
-                ],
               ),
             ),
           ),

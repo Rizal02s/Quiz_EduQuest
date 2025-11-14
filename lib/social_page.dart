@@ -119,7 +119,7 @@ class SocialPage extends StatelessWidget {
               const Spacer(flex: 3),
 
               HoverableButton(
-                label: '"The First Light of Turmoil"',
+                label: 'Easy Quiz',
                 color: const Color.fromARGB(255, 48, 12, 1).withOpacity(0.9),
                 hoverColor: const Color.fromARGB(255, 221, 152, 25),
                 onTap: () {
@@ -128,9 +128,14 @@ class SocialPage extends StatelessWidget {
               ),
 
               HoverableButton(
-                label: '"Awakening in Chaos"',
+                label: 'Hard Quiz',
                 color: const Color.fromARGB(255, 48, 12, 1).withOpacity(0.9),
-                hoverColor: const Color.fromARGB(255, 226, 0, 0).withOpacity(0.9),
+                hoverColor: const Color.fromARGB(
+                  255,
+                  226,
+                  0,
+                  0,
+                ).withOpacity(0.9),
                 onTap: () {
                   Navigator.pushNamed(context, '/quiz_social_hard');
                 },

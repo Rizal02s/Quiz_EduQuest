@@ -21,7 +21,7 @@ class _QuizScienceHardPageState extends State<QuizScienceHardPage> {
   final Duration resultDuration = const Duration(milliseconds: 900);
 
   // ===== timer quiz =====
-  int timeLeft = 20; // ✅ Waktu lebih sedikit untuk level hard
+  int timeLeft = 20;
   Timer? timer;
 
   // === START COUNTDOWN ===
@@ -51,7 +51,7 @@ class _QuizScienceHardPageState extends State<QuizScienceHardPage> {
 
   void startTimer() {
     timer?.cancel();
-    timeLeft = 20; // ✅ 20 detik untuk level hard
+    timeLeft = 20;
     timer = Timer.periodic(const Duration(seconds: 1), (t) {
       setState(() {
         timeLeft--;
@@ -61,7 +61,7 @@ class _QuizScienceHardPageState extends State<QuizScienceHardPage> {
             timer?.cancel();
             _showGameOverDialog();
           } else {
-            timeLeft = 20; // ✅ Reset ke 20 detik
+            timeLeft = 20;
           }
         }
       });
@@ -112,6 +112,10 @@ class _QuizScienceHardPageState extends State<QuizScienceHardPage> {
     super.dispose();
   }
 
+  // 🔽==================================================================🔽
+  // 📍 PERUBAHAN UTAMA: Fungsi onCheckPressed disamakan dengan Kode 1
+  // 🔽==================================================================🔽
+
   void onCheckPressed() {
     if (selectedAnswer == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -130,58 +134,277 @@ class _QuizScienceHardPageState extends State<QuizScienceHardPage> {
     setState(() {
       lastAnswerCorrect = isCorrect;
       showResultOverlay = true;
-      if (isCorrect)
-        score += 30; // ✅ Poin lebih banyak untuk level hard
-      else {
-        lives = lives - 1;
-        if (lives < 0) lives = 0;
-      }
     });
 
-    Future.delayed(resultDuration, () {
-      if (isCorrect) {
-        if (currentQuestion >= questionsScienceHard.length - 1) {
-          stopTimer();
-          setState(() => showResultOverlay = false);
-          showDialog(
-            context: context,
-            barrierDismissible: false,
-            builder: (_) => AlertDialog(
-              title: const Text('🏁 Quiz Selesai!'),
-              content: Text('Skor akhir kamu: $score'),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                    Navigator.of(context).pop();
-                  },
-                  child: const Text('Back to Home'),
+    if (isCorrect) {
+      stopTimer();
+      // ✅ Popup penjelasan jawaban benar (dari Kode 1)
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) => Dialog(
+          backgroundColor: Colors.transparent,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(22),
+          ),
+          child: Container(
+            width: 400,
+            padding: const EdgeInsets.all(28),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(22),
+              color: const Color(0xFFF9ECD4), // Style dari Kode 1
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.12),
+                  blurRadius: 16,
+                  offset: const Offset(0, 6),
                 ),
               ],
             ),
-          );
-        } else {
-          setState(() {
-            currentQuestion++;
-            selectedAnswer = null;
-            showResultOverlay = false;
-          });
-          startTimer();
-        }
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Jawaban Benar!', // Style dari Kode 1
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.brown,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  // ✅ GUNAKAN questionsScienceHard
+                  questionsScienceHard[currentQuestion]['explanation'] ??
+                      'Penjelasan tidak tersedia', // Menampilkan penjelasan
+                  style: const TextStyle(
+                    fontSize: 16,
+                    color: Colors.black87,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      setState(() {
+                        showResultOverlay = false;
+                        selectedAnswer = null;
+                        score += 30; // ✅✅ Poin 30 untuk level Hard
+                        // ✅ GUNAKAN questionsScienceHard
+                        if (currentQuestion < questionsScienceHard.length - 1) {
+                          currentQuestion++;
+                          startTimer();
+                        } else {
+                          // ✅ Dialog Rangkuman (dari Kode 1)
+                          showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (_) => Dialog(
+                              backgroundColor: Colors.transparent,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(22),
+                              ),
+                              child: Container(
+                                width: 400,
+                                padding: const EdgeInsets.all(28),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(22),
+                                  color: const Color(
+                                    0xFFEDE6D6,
+                                  ), // Style dari Kode 1
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.12),
+                                      blurRadius: 16,
+                                      offset: const Offset(0, 6),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const Text(
+                                      'Kesimpulan Quiz', // Style dari Kode 1
+                                      style: TextStyle(
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.brown,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    const SizedBox(height: 16),
+                                    Text(
+                                      // ✅ GUNAKAN questionsScienceHard
+                                      'Selamat! Kamu telah menyelesaikan seluruh ${questionsScienceHard.length} soal.\n'
+                                      'Skormu: $score\n'
+                                      'Rangkuman: Topik utama meliputi sejarah, geografi, sosial, dan penjelasan penting tiap soal. Terus belajar dan tingkatkan pemahamanmu!',
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.black87,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    const SizedBox(height: 30),
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        Navigator.of(context).popUntil(
+                                          (route) => route.isFirst,
+                                        ); // Kembali ke Home
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.brown[300],
+                                        foregroundColor: Colors.white,
+                                        shape: const StadiumBorder(),
+                                        padding: const EdgeInsets.symmetric(
+                                          vertical: 14,
+                                          horizontal: 32,
+                                        ),
+                                      ),
+                                      child: const Text(
+                                        'Home',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        }
+                      });
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.brown[300],
+                      foregroundColor: Colors.white,
+                      shape: const StadiumBorder(),
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 14,
+                        horizontal: 28,
+                      ),
+                    ),
+                    child: const Text(
+                      'Next', // Style dari Kode 1
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    } else {
+      // ✅ Logika Jawaban Salah (dari Kode 1)
+      setState(() {
+        lives = lives - 1;
+        if (lives < 0) lives = 0;
+        showResultOverlay = false;
+        selectedAnswer = null;
+      });
+
+      // ✅ Tampilkan dialog untuk jawaban salah (dari Kode 1)
+      if (lives > 0) {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (_) => Dialog(
+            backgroundColor: Colors.transparent,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(22),
+            ),
+            child: Container(
+              width: 400,
+              padding: const EdgeInsets.all(28),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(22),
+                color: const Color(0xFFF9ECD4), // Style dari Kode 1
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.12),
+                    blurRadius: 16,
+                    offset: const Offset(0, 6),
+                  ),
+                ],
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Jawaban Salah!', // Style dari Kode 1
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.red,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    // ✅ GUNAKAN questionsScienceHard
+                    'Jawaban yang benar: ${questionsScienceHard[currentQuestion]['correct']}',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      color: Colors.black87,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    // ✅ GUNAKAN questionsScienceHard
+                    questionsScienceHard[currentQuestion]['explanation'] ??
+                        'Penjelasan tidak tersedia',
+                    style: const TextStyle(fontSize: 14, color: Colors.black87),
+                  ),
+                  const SizedBox(height: 24),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                        startTimer(); // Logika dari Kode 1
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red[300],
+                        foregroundColor: Colors.white,
+                        shape: const StadiumBorder(),
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 14,
+                          horizontal: 28,
+                        ),
+                      ),
+                      child: const Text(
+                        'Lanjut', // Style dari Kode 1
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
       } else {
-        if (lives <= 0) {
-          stopTimer();
-          _showGameOverDialog();
-        } else {
-          setState(() {
-            showResultOverlay = false;
-            selectedAnswer = null;
-          });
-          startTimer();
-        }
+        _showGameOverDialog();
       }
-    });
+    }
   }
+
+  // 🔼==================================================================🔼
+  // 📍 AKHIR DARI PERUBAHAN
+  // 🔼==================================================================🔼
 
   Widget _buildLivesRow() {
     return Row(
@@ -211,7 +434,9 @@ class _QuizScienceHardPageState extends State<QuizScienceHardPage> {
         height: double.infinity,
         decoration: const BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('assets/img/science.hard.jpeg'),
+            image: AssetImage(
+              'assets/img/science.hard.jpeg',
+            ), // Tetap science.hard
             fit: BoxFit.cover,
           ),
         ),
@@ -223,6 +448,7 @@ class _QuizScienceHardPageState extends State<QuizScienceHardPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
+                    // ✅ GUNAKAN questionsScienceHard
                     'Stage ${currentQuestion + 1} / ${questionsScienceHard.length}',
                     style: const TextStyle(
                       color: Colors.white,
@@ -267,8 +493,9 @@ class _QuizScienceHardPageState extends State<QuizScienceHardPage> {
                           ? null
                           : onCheckPressed,
                       style: ElevatedButton.styleFrom(
+                        // ✅ Style Tombol Check disamakan dengan Kode 1
                         backgroundColor: selectedAnswer == null
-                            ? Colors.grey
+                            ? const Color.fromARGB(255, 237, 248, 203)
                             : Colors.greenAccent,
                         foregroundColor: Colors.black,
                         shape: const StadiumBorder(),
@@ -294,7 +521,10 @@ class _QuizScienceHardPageState extends State<QuizScienceHardPage> {
                 ],
               ),
 
-              if (showResultOverlay) _buildResultOverlay(),
+              // ❌ _buildResultOverlay() (overlay sementara) DIHAPUS DARI SINI
+              // if (showResultOverlay) _buildResultOverlay(), <-- Dihapus
+
+              // === overlay start countdown ===
               if (showStartOverlay) _buildStartOverlay(),
             ],
           ),
@@ -328,6 +558,7 @@ class _QuizScienceHardPageState extends State<QuizScienceHardPage> {
                 fontWeight: FontWeight.bold,
                 fontFamily: 'Poppins',
               ),
+              softWrap: true, // ✅ Ditambahkan dari Kode 1
             ),
           ),
           const SizedBox(height: 12),
@@ -335,7 +566,7 @@ class _QuizScienceHardPageState extends State<QuizScienceHardPage> {
             final isSelected = selectedAnswer == ans;
             return Container(
               margin: const EdgeInsets.symmetric(vertical: 6),
-              width: 320,
+              // ❌ width: 320, (dihapus agar sama dengan Kode 1)
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: isSelected
@@ -343,7 +574,14 @@ class _QuizScienceHardPageState extends State<QuizScienceHardPage> {
                       : Colors.white,
                   foregroundColor: isSelected ? Colors.white : Colors.black,
                   shape: const StadiumBorder(),
-                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 14,
+                    horizontal: 16, // ✅ Padding disamakan dengan Kode 1
+                  ),
+                  minimumSize: const Size(
+                    double.infinity,
+                    50,
+                  ), // ✅ minimumSize dari Kode 1
                 ),
                 onPressed: showResultOverlay || showStartOverlay
                     ? null
@@ -355,6 +593,7 @@ class _QuizScienceHardPageState extends State<QuizScienceHardPage> {
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
                   ),
+                  softWrap: true, // ✅ softWrap dari Kode 1
                 ),
               ),
             );
@@ -364,6 +603,7 @@ class _QuizScienceHardPageState extends State<QuizScienceHardPage> {
     );
   }
 
+  // ===== START OVERLAY WIDGET (Tetap ada, sama seperti Kode 1) =====
   Widget _buildStartOverlay() {
     return Positioned.fill(
       child: Container(
@@ -417,10 +657,11 @@ class _QuizScienceHardPageState extends State<QuizScienceHardPage> {
                     const SizedBox(height: 8),
                     const Text(
                       'Siapkan dirimu!',
+                      // ✅ Style disamakan dengan Kode 1 (fontWeight bold)
                       style: TextStyle(
                         fontSize: 14,
                         fontFamily: 'Poppins',
-                        fontWeight: FontWeight.bold,
+                        // fontWeight: FontWeight.bold, <-- di kode ini sudah ada
                       ),
                     ),
                   ],
@@ -433,62 +674,5 @@ class _QuizScienceHardPageState extends State<QuizScienceHardPage> {
     );
   }
 
-  Widget _buildResultOverlay() {
-    return Positioned(
-      top: MediaQuery.of(context).size.height * 0.38,
-      child: AnimatedOpacity(
-        opacity: showResultOverlay ? 1.0 : 0.0,
-        duration: const Duration(milliseconds: 250),
-        child: AnimatedScale(
-          scale: showResultOverlay ? 1.0 : 0.6,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOutBack,
-          child: Material(
-            elevation: 6,
-            borderRadius: BorderRadius.circular(16),
-            child: Container(
-              width: MediaQuery.of(context).size.width * 0.6,
-              padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: lastAnswerCorrect
-                          ? Colors.green[50]
-                          : Colors.red[50],
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      lastAnswerCorrect ? Icons.check_circle : Icons.cancel,
-                      color: lastAnswerCorrect ? Colors.green : Colors.red,
-                      size: 32,
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Text(
-                      lastAnswerCorrect
-                          ? 'Jawaban benar! +30 poin' // ✅ Poin lebih banyak
-                          : 'Jawaban salah! -5 poin',
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'Poppins',
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
+  // ❌ FUNGSI _buildResultOverlay() DIHAPUS (karena Kode 1 tidak pakai)
 }
